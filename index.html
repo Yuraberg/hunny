@@ -566,6 +566,382 @@ picture { display: contents; }
   transition: background 0.25s;
 }
 .lightbox-close:hover { background: rgba(255,255,255,0.2); }
+
+/* ===== ПЛАВАЮЩАЯ КНОПКА КОРЗИНЫ ===== */
+.cart-fab {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 900;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--honey-gold), var(--honey-amber));
+  border: none;
+  box-shadow: 0 8px 26px rgba(60,40,20,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.55rem;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.cart-fab:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 12px 34px rgba(60,40,20,0.5); }
+.cart-fab-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  border-radius: 11px;
+  background: var(--forest-green);
+  color: #fff;
+  font-family: 'Alegreya SC', serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--warm-white);
+}
+.cart-fab-badge.hidden { display: none; }
+
+/* ===== МОДАЛЬНОЕ ОКНО КОРЗИНЫ ===== */
+.cart-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3100;
+  background: rgba(20, 12, 6, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s;
+}
+.cart-overlay.open { opacity: 1; visibility: visible; }
+.cart-modal {
+  background: var(--warm-white);
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  border-radius: 22px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateY(16px) scale(0.97);
+  transition: transform 0.3s ease;
+}
+.cart-overlay.open .cart-modal { transform: translateY(0) scale(1); }
+.cart-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  background: var(--bark);
+  color: var(--honey-light);
+  flex-shrink: 0;
+}
+.cart-modal-header h3 { font-family: 'Ruslan Display', 'Alegreya SC', serif; font-size: 1.3rem; font-weight: 400; letter-spacing: 0.5px; }
+.cart-modal-close {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.08);
+  color: var(--warm-white);
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.25s;
+  flex-shrink: 0;
+}
+.cart-modal-close:hover { background: rgba(255,255,255,0.2); }
+.cart-modal-body { padding: 6px 24px; overflow-y: auto; flex: 1; }
+.cart-empty { text-align: center; padding: 40px 10px; color: var(--text-body); }
+.cart-empty p { margin-bottom: 16px; font-size: 1.02rem; }
+.cart-empty a { color: var(--honey-amber); font-weight: 700; }
+.cart-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 6px 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(200,146,42,0.18);
+}
+.cart-item:last-child { border-bottom: none; }
+.cart-item-name { font-family: 'Alegreya SC', serif; font-size: 1rem; color: var(--bark); grid-column: 1 / 2; }
+.cart-item-price { font-size: 0.85rem; color: var(--honey-amber); grid-column: 1 / 2; }
+.cart-item-qty { grid-column: 2 / 3; display: flex; align-items: center; gap: 8px; }
+.qty-btn {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid var(--honey-gold);
+  background: var(--warm-white);
+  color: var(--bark);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.qty-btn:hover { background: var(--cream-dark); }
+.cart-item-qty-value { min-width: 20px; text-align: center; font-family: 'Alegreya SC', serif; }
+.cart-item-remove {
+  grid-column: 3 / 4;
+  background: none;
+  border: none;
+  color: #9C3A2A;
+  font-size: 1.15rem;
+  cursor: pointer;
+  padding: 4px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+.cart-item-remove:hover { opacity: 1; }
+.cart-modal-footer {
+  padding: 16px 24px 22px;
+  border-top: 1px solid rgba(200,146,42,0.2);
+  background: var(--parchment);
+  flex-shrink: 0;
+}
+.cart-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 14px;
+  font-family: 'Alegreya SC', serif;
+  font-size: 1.1rem;
+  color: var(--bark);
+}
+.cart-total-row strong { font-size: 1.4rem; color: var(--honey-amber); }
+.cart-clear-link {
+  display: block;
+  width: 100%;
+  text-align: center;
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: var(--text-body);
+  opacity: 0.75;
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: 'Alegreya', serif;
+}
+.cart-clear-link:hover { opacity: 1; }
+
+/* ===== СВОДКА КОРЗИНЫ В ФОРМЕ ЗАКАЗА ===== */
+.order-summary {
+  background: var(--cream);
+  border: 1.5px solid var(--cream-dark);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 18px;
+}
+.order-summary-empty { font-size: 0.92rem; color: var(--text-body); }
+.order-summary-empty a { color: var(--honey-amber); font-weight: 700; }
+.order-summary-list { list-style: none; margin-bottom: 10px; }
+.order-summary-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 0.92rem;
+  padding: 5px 0;
+  color: var(--text-body);
+}
+.order-summary-total {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Alegreya SC', serif;
+  font-weight: 700;
+  color: var(--bark);
+  border-top: 1px solid var(--cream-dark);
+  padding-top: 8px;
+  margin-bottom: 8px;
+}
+.order-summary-edit {
+  font-size: 0.85rem;
+  color: var(--honey-amber);
+  background: none;
+  border: none;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  font-family: 'Alegreya', serif;
+}
+
+/* ===== ИИ-СОМЕЛЬЕ (каталог) ===== */
+.sommelier-block {
+  max-width: 720px;
+  margin: 60px auto 0;
+  background: var(--warm-white);
+  border-radius: 22px;
+  padding: 34px 32px;
+  box-shadow: 0 12px 40px var(--shadow);
+  border: 1.5px solid rgba(200,146,42,0.25);
+}
+.sommelier-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 8px;
+}
+.sommelier-icon {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--bark);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+.sommelier-header h3 {
+  font-family: 'Ruslan Display', 'Alegreya SC', serif;
+  font-weight: 400;
+  font-size: 1.3rem;
+  color: var(--bark);
+}
+.sommelier-lead { font-size: 0.95rem; color: var(--text-body); margin-bottom: 18px; }
+.sommelier-form { display: flex; flex-direction: column; gap: 12px; }
+.sommelier-form textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 14px 16px;
+  border: 1.5px solid var(--cream-dark);
+  border-radius: 14px;
+  font-family: 'Alegreya', serif;
+  font-size: 1rem;
+  color: var(--text-body);
+  background: var(--parchment);
+  resize: vertical;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.sommelier-form textarea:focus {
+  outline: none;
+  border-color: var(--honey-gold);
+  box-shadow: 0 0 0 3px rgba(200,146,42,0.15);
+}
+.sommelier-ask-btn { align-self: flex-start; }
+.sommelier-ask-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.sommelier-reply {
+  display: none;
+  margin-top: 22px;
+  padding: 20px 22px;
+  background: var(--parchment);
+  border-left: 4px solid var(--honey-gold);
+  border-radius: 4px 16px 16px 4px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.15rem;
+  font-style: italic;
+  line-height: 1.7;
+  color: var(--text-dark);
+}
+.sommelier-reply.show { display: block; }
+.sommelier-reply.err { font-style: normal; font-family: 'Alegreya', serif; font-size: 0.95rem; border-left-color: #9C3A2A; }
+.sommelier-pick-btn {
+  display: inline-block;
+  margin-top: 14px;
+  font-family: 'Alegreya SC', serif;
+  font-style: normal;
+  font-size: 0.85rem;
+}
+.sommelier-loading {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+  font-size: 0.9rem;
+  color: var(--honey-amber);
+  font-style: italic;
+}
+.sommelier-loading.show { display: flex; }
+.spinner-bee {
+  display: inline-block;
+  animation: spin-bee 1.1s linear infinite;
+}
+@keyframes spin-bee { to { transform: rotate(360deg); } }
+
+/* ===== ГЕНЕРАТОР ОТКРЫТОК (подарочные наборы) ===== */
+.postcard-block {
+  margin-top: 34px;
+  background: rgba(255,255,255,0.06);
+  border: 1.5px solid rgba(232,184,75,0.3);
+  border-radius: 20px;
+  padding: 26px 28px;
+}
+.postcard-header { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+.postcard-header h3 {
+  font-family: 'Ruslan Display', 'Alegreya SC', serif;
+  font-weight: 400;
+  font-size: 1.2rem;
+  color: var(--honey-light);
+}
+.postcard-lead { font-size: 0.92rem; color: var(--cream-dark); margin-bottom: 16px; }
+.postcard-form { display: flex; gap: 10px; flex-wrap: wrap; }
+.postcard-form input {
+  flex: 1;
+  min-width: 200px;
+  padding: 13px 16px;
+  border: 1.5px solid rgba(232,184,75,0.4);
+  border-radius: 12px;
+  font-family: 'Alegreya', serif;
+  font-size: 0.98rem;
+  color: var(--text-dark);
+  background: var(--warm-white);
+}
+.postcard-form input:focus {
+  outline: none;
+  border-color: var(--honey-gold);
+  box-shadow: 0 0 0 3px rgba(232,184,75,0.2);
+}
+.postcard-gen-btn { flex-shrink: 0; padding: 13px 26px; }
+.postcard-gen-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.postcard-loading {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  font-size: 0.88rem;
+  color: var(--honey-light);
+  font-style: italic;
+}
+.postcard-loading.show { display: flex; }
+.postcard-result {
+  display: none;
+  margin-top: 18px;
+  padding: 24px 26px;
+  background: var(--cream);
+  border-radius: 4px;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+.postcard-result.show { display: block; }
+.postcard-result::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 1px solid var(--honey-gold);
+  opacity: 0.4;
+  pointer-events: none;
+}
+.postcard-result-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2rem;
+  font-style: italic;
+  line-height: 1.75;
+  color: var(--text-dark);
+  white-space: pre-wrap;
+  margin-bottom: 16px;
+  position: relative;
+}
+.postcard-result.err .postcard-result-text { font-style: normal; font-family: 'Alegreya', serif; font-size: 0.95rem; }
+.postcard-actions { display: flex; gap: 10px; flex-wrap: wrap; position: relative; }
+.postcard-copy-btn, .postcard-insert-btn {
+  font-size: 0.82rem;
+  padding: 9px 18px;
+}
+
 .arch-topper {
   position: absolute;
   top: -13px;
@@ -796,11 +1172,13 @@ picture { display: contents; }
   padding: 12px 34px;
   border-radius: 10px;
   border: 1px solid rgba(0,0,0,0.3);
+  cursor: pointer;
   text-decoration: none;
   transition: all 0.3s;
   text-transform: uppercase;
   box-shadow: 0 4px 0 rgba(30,18,8,0.5), 0 8px 18px rgba(0,0,0,0.2);
 }
+.btn-card.added { background: linear-gradient(180deg, var(--forest-green) 0%, var(--forest-dark) 100%); }
 .btn-card:hover {
   background: linear-gradient(180deg, var(--honey-amber) 0%, var(--bark-light) 100%);
   transform: translateY(-2px);
@@ -1447,7 +1825,7 @@ picture { display: contents; }
           <p class="product-card-type">мёд натуральный цветочный</p>
           <div class="product-card-slogan">К чаю да к доброй беседе</div>
           <p class="product-card-desc">Собран на вольных лугах Самарского края. Настоящий живой мёд, который укрепит иммунитет детям и согреет взрослых холодными вечерами.</p>
-          <a href="#order" class="btn-card" onclick="preselect('Луговой Гостинец (цветочный)')">Заказать</a>
+          <button type="button" class="btn-card" onclick="addToCart('lugovoy', this)">В корзину</button>
         </div>
       </div>
 
@@ -1485,7 +1863,7 @@ picture { display: contents; }
           <p class="product-card-type">мёд натуральный гречишный</p>
           <div class="product-card-slogan">Для крепкого духа и тела</div>
           <p class="product-card-desc">Тёмный и густой, как сама земля-кормилица. Богат железом и микроэлементами, дарит бодрость и укрепляет дух. Ложечка с утра — и горы по плечу!</p>
-          <a href="#order" class="btn-card" onclick="preselect('Богатырская Сила (гречишный)')">Заказать</a>
+          <button type="button" class="btn-card" onclick="addToCart('bogatyrskaya', this)">В корзину</button>
         </div>
       </div>
 
@@ -1523,10 +1901,25 @@ picture { display: contents; }
           <p class="product-card-type">мёд натуральный липовый</p>
           <div class="product-card-slogan">Нежность в каждой ложке</div>
           <p class="product-card-desc">Мёд с тонким вкусом, который тает во рту, заменяя детям любые конфеты. Лучшее природное средство от зимней хандры и первых признаков простуды.</p>
-          <a href="#order" class="btn-card" onclick="preselect('Липовая Услада (липовый)')">Заказать</a>
+          <button type="button" class="btn-card" onclick="addToCart('lipovaya', this)">В корзину</button>
         </div>
       </div>
 
+    </div>
+
+    <!-- ===== ИИ-СОМЕЛЬЕ ===== -->
+    <div class="sommelier-block reveal">
+      <div class="sommelier-header">
+        <span class="sommelier-icon">🐝</span>
+        <h3>Спросите пасечника</h3>
+      </div>
+      <p class="sommelier-lead">Расскажите, кому и для чего нужен мёд — Дмитрий подскажет, какой сорт подойдёт лучше всего.</p>
+      <div class="sommelier-form">
+        <textarea id="sommelierInput" maxlength="400" placeholder="Например: ищу мёд для мужа, он много занимается спортом и часто простывает зимой…"></textarea>
+        <button type="button" class="btn-primary sommelier-ask-btn" id="sommelierAskBtn" onclick="askSommelier()">Спросить пасечника</button>
+      </div>
+      <div class="sommelier-loading" id="sommelierLoading"><span class="spinner-bee">🐝</span> Дмитрий думает над вашим вопросом…</div>
+      <div class="sommelier-reply" id="sommelierReply"></div>
     </div>
   </div>
 </section>
@@ -1559,7 +1952,28 @@ picture { display: contents; }
           <li><strong>«Липовая Услада»</strong> — полакомиться от души</li>
         </ul>
         <p>Внутри баночки уложены на натуральной древесной стружке, а в комплекте — деревянная ложечка-веретено для мёда.</p>
-        <a href="#order" class="btn-primary" style="margin-top: 10px;" onclick="preselect('Набор «Душа Слободы»')">Заказать набор</a>
+        <button type="button" class="btn-primary" style="margin-top: 10px;" onclick="addToCart('giftset', this)">В корзину</button>
+
+        <!-- ===== ГЕНЕРАТОР ОТКРЫТОК ===== -->
+        <div class="postcard-block reveal">
+          <div class="postcard-header">
+            <span class="sommelier-icon">✉️</span>
+            <h3>Открытка в подарок</h3>
+          </div>
+          <p class="postcard-lead">Пара слов — для кого повод, и наш писарь сложит для вас тёплую открытку. Вложите её в ящичек или добавьте в комментарий к заказу.</p>
+          <div class="postcard-form">
+            <input type="text" id="postcardInput" maxlength="200" placeholder="Например: для мамы на юбилей">
+            <button type="button" class="btn-card postcard-gen-btn" id="postcardGenBtn" onclick="generatePostcard()">Написать открытку</button>
+          </div>
+          <div class="postcard-loading" id="postcardLoading"><span class="spinner-bee">🐝</span> Писарь подбирает слова…</div>
+          <div class="postcard-result" id="postcardResult">
+            <div class="postcard-result-text" id="postcardResultText"></div>
+            <div class="postcard-actions" id="postcardActions">
+              <button type="button" class="btn-card postcard-copy-btn" id="postcardCopyBtn" onclick="copyPostcard()">📋 Скопировать</button>
+              <button type="button" class="btn-card postcard-insert-btn" onclick="insertPostcardIntoOrder()">Вставить в комментарий к заказу</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1643,17 +2057,10 @@ picture { display: contents; }
             <input id="fPhone" name="phone" type="tel" placeholder="+7 (___) ___-__-__" autocomplete="tel" required>
           </div>
         </div>
-        <div class="form-group">
-          <label for="productSelect">Что хотите заказать?</label>
-          <select id="productSelect" name="product" required>
-            <option value="">Выберите продукт...</option>
-            <option>Луговой Гостинец (цветочный)</option>
-            <option>Богатырская Сила (гречишный)</option>
-            <option>Липовая Услада (липовый)</option>
-            <option>Набор «Душа Слободы»</option>
-            <option>Несколько сортов (укажу в комментарии)</option>
-          </select>
+        <div class="order-summary" id="orderSummary">
+          <!-- Заполняется скриптом из корзины: renderCart() -->
         </div>
+        <input type="hidden" id="cartItemsField" name="order_items" value="">
         <div class="form-group">
           <label for="fAddress">Адрес доставки</label>
           <input id="fAddress" name="address" type="text" placeholder="Город, улица, дом" autocomplete="street-address">
@@ -1724,6 +2131,28 @@ picture { display: contents; }
   <img id="lightboxImg" src="" alt="">
 </div>
 
+<!-- Плавающая кнопка корзины -->
+<button type="button" class="cart-fab" id="cartFab" aria-label="Открыть корзину">
+  🧺
+  <span class="cart-fab-badge hidden" id="cartFabBadge">0</span>
+</button>
+
+<!-- Модальное окно корзины -->
+<div class="cart-overlay" id="cartOverlay">
+  <div class="cart-modal" role="dialog" aria-modal="true" aria-labelledby="cartModalTitle">
+    <div class="cart-modal-header">
+      <h3 id="cartModalTitle">Ваша корзина</h3>
+      <button type="button" class="cart-modal-close" id="cartModalClose" aria-label="Закрыть корзину">✕</button>
+    </div>
+    <div class="cart-modal-body" id="cartModalBody">
+      <!-- Заполняется скриптом: renderCart() -->
+    </div>
+    <div class="cart-modal-footer" id="cartModalFooter">
+      <!-- Заполняется скриптом: renderCart() -->
+    </div>
+  </div>
+</div>
+
 <script>
 // Nav scroll effect
 const nav = document.getElementById('nav');
@@ -1758,11 +2187,167 @@ if ('IntersectionObserver' in window) {
   showAll(); // старый браузер без IntersectionObserver
 }
 
-// Pre-select product when coming from a catalog "Заказать" button
-function preselect(value) {
-  const select = document.getElementById('productSelect');
-  if (select) select.value = value;
+/* ============================================================
+   КОРЗИНА: добавление/удаление товаров перед оформлением заказа
+   ============================================================ */
+const PRODUCTS = {
+  lugovoy:      { name: 'Луговой Гостинец (цветочный)', price: 500 },
+  bogatyrskaya: { name: 'Богатырская Сила (гречишный)',  price: 600 },
+  lipovaya:     { name: 'Липовая Услада (липовый)',      price: 650 },
+  giftset:      { name: 'Набор «Душа Слободы»',          price: 2500 }
+};
+const CART_STORAGE_KEY = 'medSlobodaCart';
+
+function loadCart() {
+  try {
+    const raw = localStorage.getItem(CART_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed.filter(i => PRODUCTS[i.id] && i.qty > 0) : [];
+  } catch (e) {
+    return [];
+  }
 }
+
+let cart = loadCart();
+
+function saveCart() {
+  try { localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart)); } catch (e) {}
+}
+
+function cartTotal() {
+  return cart.reduce((sum, item) => sum + PRODUCTS[item.id].price * item.qty, 0);
+}
+
+function cartCount() {
+  return cart.reduce((sum, item) => sum + item.qty, 0);
+}
+
+function addToCart(id, btnEl) {
+  const existing = cart.find(i => i.id === id);
+  if (existing) {
+    existing.qty += 1;
+  } else {
+    cart.push({ id, qty: 1 });
+  }
+  saveCart();
+  renderCart();
+
+  if (btnEl) {
+    const original = btnEl.textContent;
+    btnEl.textContent = '✓ Добавлено';
+    btnEl.classList.add('added');
+    setTimeout(() => {
+      btnEl.textContent = original;
+      btnEl.classList.remove('added');
+    }, 1200);
+  }
+}
+
+function changeQty(id, delta) {
+  const item = cart.find(i => i.id === id);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) {
+    cart = cart.filter(i => i.id !== id);
+  }
+  saveCart();
+  renderCart();
+}
+
+function removeFromCart(id) {
+  cart = cart.filter(i => i.id !== id);
+  saveCart();
+  renderCart();
+}
+
+function clearCart() {
+  cart = [];
+  saveCart();
+  renderCart();
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+function renderCart() {
+  const badge = document.getElementById('cartFabBadge');
+  const count = cartCount();
+  badge.textContent = String(count);
+  badge.classList.toggle('hidden', count === 0);
+
+  // --- Модальное окно корзины ---
+  const body = document.getElementById('cartModalBody');
+  const footer = document.getElementById('cartModalFooter');
+
+  if (cart.length === 0) {
+    body.innerHTML = '<div class="cart-empty"><p>Корзина пуста — загляните в каталог 🍯</p>' +
+      '<a href="#catalog" class="btn-card" onclick="closeCart()">В каталог</a></div>';
+    footer.innerHTML = '';
+  } else {
+    body.innerHTML = cart.map(item => {
+      const p = PRODUCTS[item.id];
+      return '<div class="cart-item">' +
+        '<div>' +
+          '<div class="cart-item-name">' + escapeHtml(p.name) + '</div>' +
+          '<div class="cart-item-price">' + p.price.toLocaleString('ru-RU') + ' ₽ / шт.</div>' +
+        '</div>' +
+        '<div class="cart-item-qty">' +
+          '<button type="button" class="qty-btn" aria-label="Уменьшить количество" onclick="changeQty(\'' + item.id + '\', -1)">−</button>' +
+          '<span class="cart-item-qty-value">' + item.qty + '</span>' +
+          '<button type="button" class="qty-btn" aria-label="Увеличить количество" onclick="changeQty(\'' + item.id + '\', 1)">+</button>' +
+        '</div>' +
+        '<button type="button" class="cart-item-remove" aria-label="Убрать из корзины" onclick="removeFromCart(\'' + item.id + '\')">✕</button>' +
+      '</div>';
+    }).join('');
+
+    footer.innerHTML =
+      '<div class="cart-total-row"><span>Итого:</span><strong>' + cartTotal().toLocaleString('ru-RU') + ' ₽</strong></div>' +
+      '<a href="#order" class="btn-primary" style="display:block; text-align:center;" onclick="closeCart()">Оформить заказ</a>' +
+      '<button type="button" class="cart-clear-link" onclick="clearCart()">Очистить корзину</button>';
+  }
+
+  // --- Сводка в форме заказа ---
+  const summary = document.getElementById('orderSummary');
+  const cartField = document.getElementById('cartItemsField');
+  if (cart.length === 0) {
+    summary.innerHTML = '<p class="order-summary-empty">Корзина пуста. <a href="#catalog">Выберите мёд в каталоге</a> — он появится здесь.</p>';
+    cartField.value = '';
+  } else {
+    const lines = cart.map(item => {
+      const p = PRODUCTS[item.id];
+      return '<li><span>' + escapeHtml(p.name) + ' × ' + item.qty + '</span><span>' + (p.price * item.qty).toLocaleString('ru-RU') + ' ₽</span></li>';
+    }).join('');
+    summary.innerHTML =
+      '<ul class="order-summary-list">' + lines + '</ul>' +
+      '<div class="order-summary-total"><span>Итого</span><span>' + cartTotal().toLocaleString('ru-RU') + ' ₽</span></div>' +
+      '<button type="button" class="order-summary-edit" onclick="openCart()">Изменить состав заказа</button>';
+    cartField.value = cart.map(item => PRODUCTS[item.id].name + ' × ' + item.qty).join('; ') +
+      ' — итого ' + cartTotal().toLocaleString('ru-RU') + ' ₽';
+  }
+}
+
+function openCart() {
+  document.getElementById('cartOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeCart() {
+  document.getElementById('cartOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('cartFab').addEventListener('click', openCart);
+document.getElementById('cartModalClose').addEventListener('click', closeCart);
+document.getElementById('cartOverlay').addEventListener('click', (e) => {
+  if (e.target.id === 'cartOverlay') closeCart();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.getElementById('cartOverlay').classList.contains('open')) closeCart();
+});
+
+renderCart(); // первичная отрисовка (в т.ч. восстановление корзины из localStorage)
 
 /* ============================================================
    НАСТРОЙКА ПРИЁМА ЗАКАЗОВ
@@ -1790,12 +2375,18 @@ function showStatus(type, html) {
 }
 
 function buildOrderText(d) {
+  const items = cart.map(item => {
+    const p = PRODUCTS[item.id];
+    return '  • ' + p.name + ' × ' + item.qty + ' = ' + (p.price * item.qty).toLocaleString('ru-RU') + ' ₽';
+  }).join('\n');
   return [
     'Новый заказ с сайта «Медовая Слобода»',
     '',
     'Имя: ' + d.name,
     'Телефон: ' + d.phone,
-    'Товар: ' + d.product,
+    'Товары:',
+    items,
+    'Итого: ' + cartTotal().toLocaleString('ru-RU') + ' ₽',
     d.address ? 'Адрес: ' + d.address : null,
     d.comment ? 'Комментарий: ' + d.comment : null
   ].filter(Boolean).join('\n');
@@ -1812,14 +2403,17 @@ async function handleOrder(e) {
   const data = {
     name: form.name.value.trim(),
     phone: form.phone.value.trim(),
-    product: form.product.value,
     address: form.address.value.trim(),
     comment: form.comment.value.trim()
   };
 
   // Валидация
-  if (!data.name || !data.phone || !data.product) {
-    showStatus('err', 'Пожалуйста, заполните имя, телефон и выберите продукт.');
+  if (cart.length === 0) {
+    showStatus('err', 'Корзина пуста — добавьте хотя бы один товар из каталога.');
+    return;
+  }
+  if (!data.name || !data.phone) {
+    showStatus('err', 'Пожалуйста, заполните имя и телефон.');
     return;
   }
   const digits = data.phone.replace(/\D/g, '');
@@ -1839,6 +2433,8 @@ async function handleOrder(e) {
     window.open(url, '_blank', 'noopener');
     showStatus('ok', 'Мы открыли WhatsApp с готовым текстом заказа — осталось нажать «Отправить». ' +
                      'Если окно не открылось, позвоните нам: <a href="tel:+79335355539">+7 (933) 535-55-39</a>.');
+    form.reset();
+    clearCart();
     return;
   }
 
@@ -1856,6 +2452,7 @@ async function handleOrder(e) {
     if (!res.ok) throw new Error('HTTP ' + res.status);
 
     form.reset();
+    clearCart();
     btn.textContent = '✓ Заказ отправлен!';
     showStatus('ok', 'Спасибо! Заявка принята — мы свяжемся с вами в ближайшее время для подтверждения.');
     setTimeout(() => { btn.textContent = 'Отправить заказ'; }, 4000);
@@ -1868,6 +2465,147 @@ async function handleOrder(e) {
   } finally {
     btn.disabled = false;
   }
+}
+
+/* ============================================================
+   ИИ-СОМЕЛЬЕ И ГЕНЕРАТОР ОТКРЫТОК
+   ------------------------------------------------------------
+   Оба обращаются к Cloudflare Worker (см. worker/sommelier-worker.js),
+   который прячет API-ключ Anthropic и не даёт нейросети отвечать
+   не в тему. Впишите сюда адрес Worker после его публикации:
+   worker/sommelier-worker.js содержит пошаговую инструкцию.
+   ============================================================ */
+const AI_CONFIG = {
+  endpoint: ''   // ← вставьте сюда https://ваш-worker.workers.dev (без слэша на конце)
+};
+
+async function callAI(path, text) {
+  const res = await fetch(AI_CONFIG.endpoint + path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text })
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Ошибка сервиса');
+  return data;
+}
+
+async function askSommelier() {
+  const input = document.getElementById('sommelierInput');
+  const btn = document.getElementById('sommelierAskBtn');
+  const loading = document.getElementById('sommelierLoading');
+  const reply = document.getElementById('sommelierReply');
+  const text = input.value.trim();
+
+  if (!text) {
+    reply.className = 'sommelier-reply show err';
+    reply.textContent = 'Расскажите пару слов о том, кому и для чего нужен мёд — тогда Дмитрий сможет посоветовать.';
+    return;
+  }
+
+  if (!AI_CONFIG.endpoint) {
+    reply.className = 'sommelier-reply show err';
+    reply.textContent = 'Сомелье пока настраивается — загляните чуть позже 🐝 А пока загляните в каталог выше, там уже есть описание каждого сорта.';
+    return;
+  }
+
+  btn.disabled = true;
+  reply.classList.remove('show');
+  loading.classList.add('show');
+
+  try {
+    const data = await callAI('/sommelier', text);
+    loading.classList.remove('show');
+    reply.className = 'sommelier-reply show';
+
+    let html = escapeHtml(data.reply).replace(/\n+/g, '<br><br>');
+    if (data.pick && PRODUCTS[data.pick]) {
+      html += '<br><button type="button" class="btn-card sommelier-pick-btn" onclick="addToCart(\'' + data.pick + '\', this)">Добавить «' + escapeHtml(PRODUCTS[data.pick].name) + '» в корзину</button>';
+    }
+    reply.innerHTML = html;
+  } catch (err) {
+    loading.classList.remove('show');
+    reply.className = 'sommelier-reply show err';
+    reply.textContent = 'Не получилось связаться с пасечником. Попробуйте ещё раз чуть позже или напишите нам напрямую.';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function generatePostcard() {
+  const input = document.getElementById('postcardInput');
+  const btn = document.getElementById('postcardGenBtn');
+  const loading = document.getElementById('postcardLoading');
+  const result = document.getElementById('postcardResult');
+  const resultText = document.getElementById('postcardResultText');
+  const actions = document.getElementById('postcardActions');
+  const text = input.value.trim();
+
+  if (!text) {
+    result.className = 'postcard-result show err';
+    actions.style.display = 'none';
+    resultText.textContent = 'Напишите, для кого и по какому поводу открытка — например, «для мамы на юбилей».';
+    return;
+  }
+
+  if (!AI_CONFIG.endpoint) {
+    result.className = 'postcard-result show err';
+    actions.style.display = 'none';
+    resultText.textContent = 'Генератор открыток пока настраивается — загляните чуть позже 🐝';
+    return;
+  }
+
+  btn.disabled = true;
+  result.classList.remove('show');
+  loading.classList.add('show');
+
+  try {
+    const data = await callAI('/postcard', text);
+    loading.classList.remove('show');
+    result.className = 'postcard-result show';
+    actions.style.display = 'flex';
+    resultText.textContent = data.reply;
+  } catch (err) {
+    loading.classList.remove('show');
+    result.className = 'postcard-result show err';
+    actions.style.display = 'none';
+    resultText.textContent = 'Не получилось написать открытку. Попробуйте ещё раз чуть позже.';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function copyPostcard() {
+  const text = document.getElementById('postcardResultText').textContent;
+  const btn = document.getElementById('postcardCopyBtn');
+  const done = () => {
+    const original = btn.textContent;
+    btn.textContent = '✓ Скопировано';
+    setTimeout(() => { btn.textContent = original; }, 1800);
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  } else {
+    fallbackCopy(text, done);
+  }
+}
+
+function fallbackCopy(text, done) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.left = '-9999px';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); done(); } catch (e) {}
+  ta.remove();
+}
+
+function insertPostcardIntoOrder() {
+  const text = document.getElementById('postcardResultText').textContent;
+  const comment = document.getElementById('fComment');
+  comment.value = comment.value ? comment.value + '\n\n' + text : text;
+  document.getElementById('order').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 /* ============================================================

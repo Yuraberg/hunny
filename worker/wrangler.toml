@@ -1,0 +1,6 @@
+name = "medovaya-sloboda-ai"
+main = "sommelier-worker.js"
+compatibility_date = "2024-11-01"
+
+# Секретный ключ ANTHROPIC_API_KEY НЕ хранится в этом файле.
+# Задайте его один раз командой:  wrangler secret put ANTHROPIC_API_KEY
