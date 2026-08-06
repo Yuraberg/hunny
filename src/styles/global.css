@@ -287,6 +287,26 @@ picture {
     text-underline-offset: 2px;
   }
   .wiki-content a:hover { color: var(--color-bark); }
+  .wiki-content table {
+    display: block;
+    overflow-x: auto;
+    max-width: 100%;
+    margin-bottom: 1.25rem;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+  .wiki-content th, .wiki-content td {
+    border: 1px solid var(--color-kraft-dark);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+  }
+  .wiki-content th {
+    background: var(--color-cream);
+    color: var(--color-bark);
+    font-family: var(--font-label);
+    white-space: normal;
+  }
   .wiki-content blockquote {
     border-left: 3px solid var(--color-honey-gold);
     padding-left: 1rem;
