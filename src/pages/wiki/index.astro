@@ -1,0 +1,96 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const CATEGORY_ORDER = [
+  'Сорта мёда',
+  'Пчёлы и породы',
+  'Болезни и вредители',
+  'Апитерапия и здоровье',
+  'Пчеловодство',
+  'Термины',
+] as const;
+
+const articles = (
+  await getCollection('wiki', (a) => import.meta.env.DEV || !a.data.draft)
+).sort((a, b) => a.data.title.localeCompare(b.data.title, 'ru'));
+
+const groups = CATEGORY_ORDER.map((category) => ({
+  category,
+  items: articles.filter((a) => a.data.category === category),
+})).filter((g) => g.items.length > 0);
+---
+
+<BaseLayout
+  title="Медовая энциклопедия — Медовая Слобода"
+  description="Энциклопедия мёда и пчеловодства: сорта мёда, породы пчёл, болезни и вредители, апитерапия и здоровье, практика пчеловодства."
+>
+  <section class="texture-paper px-5 py-24 md:py-28">
+    <div class="mx-auto max-w-6xl">
+      <div class="title-ornate reveal">
+        <h1 class="font-display text-3xl font-normal text-bark">Медовая энциклопедия</h1>
+      </div>
+      <p class="font-accent reveal mb-10 text-center text-lg text-honey-amber italic">
+        {articles.length} статей о мёде, пчёлах и пчеловодстве
+      </p>
+
+      <div class="reveal mx-auto mb-14 max-w-xl">
+        <input
+          id="wiki-search"
+          type="search"
+          placeholder="Поиск по энциклопедии…"
+          class="w-full rounded-full border border-kraft-dark/40 bg-warm-white px-5 py-3 font-body text-text-body shadow-[0_2px_10px_var(--shadow)] outline-none focus:border-honey-amber"
+        />
+        <p id="wiki-search-empty" class="mt-4 hidden text-center text-text-body/60">
+          Ничего не найдено. Попробуйте другой запрос.
+        </p>
+      </div>
+
+      {groups.map((group) => (
+        <div class="wiki-group reveal mb-14" data-category={group.category}>
+          <h2 class="font-label mb-5 border-b border-kraft-dark/40 pb-2 text-xl text-bark">
+            {group.category}
+            <span class="ml-2 text-sm font-normal text-text-body/50">({group.items.length})</span>
+          </h2>
+          <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {group.items.map((item) => (
+              <a
+                href={`/wiki/${item.id}`}
+                class="wiki-item group rounded-xl bg-warm-white px-4 py-3 shadow-[0_2px_10px_var(--shadow)] transition-transform hover:-translate-y-0.5"
+                data-title={item.data.title.toLowerCase()}
+              >
+                <h3 class="font-label text-base text-bark group-hover:text-honey-amber">{item.data.title}</h3>
+                <p class="mt-1 line-clamp-2 text-sm text-text-body/70">{item.data.excerpt}</p>
+              </a>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  const input = document.getElementById('wiki-search') as HTMLInputElement | null;
+  const groups = document.querySelectorAll<HTMLElement>('.wiki-group');
+  const emptyMsg = document.getElementById('wiki-search-empty');
+
+  input?.addEventListener('input', () => {
+    const query = input.value.trim().toLowerCase();
+    let anyVisible = false;
+
+    groups.forEach((group) => {
+      const items = group.querySelectorAll<HTMLElement>('.wiki-item');
+      let groupHasMatch = false;
+      items.forEach((item) => {
+        const matches = !query || (item.dataset.title ?? '').includes(query);
+        item.classList.toggle('hidden', !matches);
+        if (matches) groupHasMatch = true;
+      });
+      group.classList.toggle('hidden', !groupHasMatch);
+      if (groupHasMatch) anyVisible = true;
+    });
+
+    emptyMsg?.classList.toggle('hidden', anyVisible);
+  });
+</script>

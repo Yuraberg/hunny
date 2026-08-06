@@ -1,0 +1,42 @@
+---
+const links = [
+  { href: '/#about', label: 'Наша история' },
+  { href: '/#catalog', label: 'Каталог' },
+  { href: '/#gift', label: 'Подарочные наборы' },
+  { href: '/stories', label: 'Истории' },
+  { href: '/wiki', label: 'Энциклопедия' },
+  { href: '/#order', label: 'Заказать' },
+  { href: '/#contacts', label: 'Контакты' },
+];
+---
+
+<div
+  id="mobileMenu"
+  class="fixed inset-0 z-40 hidden flex-col items-center justify-center gap-6 bg-bark/97"
+>
+  <button
+    id="mobileMenuClose"
+    class="absolute top-5 right-6 border-none bg-transparent text-3xl text-cream"
+    aria-label="Закрыть меню"
+  >
+    ✕
+  </button>
+  {links.map((link) => (
+    <a
+      href={link.href}
+      class="mobile-menu-link font-label text-2xl tracking-wide text-cream transition-colors duration-300 hover:text-honey-gold"
+    >
+      {link.label}
+    </a>
+  ))}
+</div>
+
+<script>
+  const menu = document.getElementById('mobileMenu');
+  const close = () => {
+    menu?.classList.remove('flex');
+    menu?.classList.add('hidden');
+  };
+  document.getElementById('mobileMenuClose')?.addEventListener('click', close);
+  menu?.querySelectorAll('.mobile-menu-link').forEach((link) => link.addEventListener('click', close));
+</script>

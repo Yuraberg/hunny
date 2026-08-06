@@ -2,3 +2,19 @@
 _originals/
 _reference/
 .claude/
+
+# Astro build output
+dist/
+.astro/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# env
+.env
+.env.production
+
+# OS/editor
+.DS_Store
+.idea/

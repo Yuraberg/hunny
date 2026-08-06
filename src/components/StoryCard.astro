@@ -1,0 +1,39 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+
+interface Props {
+  story: CollectionEntry<'stories'>;
+}
+
+const { story } = Astro.props;
+const { title, excerpt, heroImage, tags, publishedDate } = story.data;
+const dateLabel = publishedDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+---
+
+<a
+  href={`/stories/${story.id}`}
+  class="story-card reveal group flex flex-col overflow-hidden rounded-2xl bg-warm-white shadow-[0_4px_16px_var(--shadow)] transition-transform hover:-translate-y-1"
+>
+  <div class="aspect-[16/10] w-full overflow-hidden">
+    <Image
+      src={heroImage}
+      alt={title}
+      width={480}
+      height={300}
+      class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+    />
+  </div>
+  <div class="flex flex-1 flex-col p-5">
+    {tags.length > 0 && (
+      <div class="mb-2 flex flex-wrap gap-2">
+        {tags.map((tag) => (
+          <span class="font-label rounded-full bg-cream px-3 py-1 text-xs text-honey-amber">{tag}</span>
+        ))}
+      </div>
+    )}
+    <h3 class="font-label mb-2 text-lg text-bark">{title}</h3>
+    <p class="mb-3 flex-1 text-sm text-text-body">{excerpt}</p>
+    <span class="text-xs text-text-body/60">{dateLabel}</span>
+  </div>
+</a>

@@ -1,0 +1,67 @@
+---
+import { Image } from 'astro:assets';
+import buckwheatField from '../assets/products/bogatyrskaya_back.jpg';
+---
+
+<section id="about" class="texture-paper py-24">
+  <div class="mx-auto max-w-3xl px-5 text-center">
+    <div class="title-ornate reveal">
+      <h2 class="font-display text-3xl font-normal text-bark">Наша история</h2>
+    </div>
+    <p class="font-accent reveal text-lg text-honey-amber italic">
+      От сердца самарской природы — к вашему столу
+    </p>
+  </div>
+
+  <div class="torn torn-b" style="background: var(--color-warm-white);"></div>
+  <div class="texture-wood py-14">
+    <div class="mx-auto grid max-w-4xl items-center gap-10 px-5 md:grid-cols-2">
+      <div class="reveal text-center">
+        <div class="mx-auto flex h-[130px] w-[130px] items-center justify-center rounded-full border-2 border-honey-gold/50 bg-bark-light">
+          <!-- Плейсхолдер: заменить на реальное фото Дмитрия Бердникова -->
+          <svg width="72" height="72" viewBox="0 0 64 64" fill="none" stroke="#fff8ec" stroke-width="1.6" opacity="0.85">
+            <ellipse cx="32" cy="30" rx="11" ry="8" />
+            <rect x="20" y="24" width="24" height="3" fill="#fff8ec" stroke="none" />
+            <rect x="20" y="33" width="24" height="3" fill="#fff8ec" stroke="none" />
+            <circle cx="14" cy="26" r="4" />
+          </svg>
+        </div>
+        <p class="font-label mt-4 text-cream">Дмитрий Бердников</p>
+      </div>
+      <div class="zoomable-photo relative overflow-hidden rounded-xl reveal" data-full={buckwheatField.src}>
+        <Image src={buckwheatField} alt="Гречишное поле на закате в Самарском крае" width={690} height={376} loading="lazy" />
+        <button
+          type="button"
+          class="zoom-badge absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-warm-white/90 text-sm shadow"
+          aria-label="Увеличить фото гречишного поля"
+          data-full={buckwheatField.src}
+          data-alt="Гречишное поле на закате в Самарском крае"
+        >
+          🔍
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="torn torn-t" style="background: var(--color-warm-white);"></div>
+
+  <div class="mx-auto max-w-2xl px-5 pt-16 text-center">
+    <div class="reveal">
+      <h3 class="font-display mb-5 text-2xl text-bark">Семейное дело Бердниковых</h3>
+      <p class="mb-4">
+        В нашей Слободе пчёлы живут вольно, а мёд собирают с душистых трав Самарского края. Мы сохранили
+        дедовские способы сбора, чтобы донести до вашего стола всю пользу природы.
+      </p>
+      <p class="mb-4">
+        Пасечник Дмитрий Бердников продолжает семейные традиции, которые передавались из поколения в
+        поколение. Каждая баночка — это результат любви к своему делу и уважения к природе.
+      </p>
+      <p class="mb-8">
+        Никакой химии — только солнце, травы и труд пчелы. Мы гордимся тем, что наш мёд сохраняет живую
+        силу самарского разнотравья.
+      </p>
+      <p class="font-accent border-l-4 border-honey-gold pl-5 text-left text-xl text-honey-amber italic">
+        «Мы продаём не просто банку мёда, а кусочек спокойной, здоровой жизни»
+      </p>
+    </div>
+  </div>
+</section>

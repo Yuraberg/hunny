@@ -1,0 +1,26 @@
+---
+import { getCollection } from 'astro:content';
+import ProductCard from './ProductCard.astro';
+
+const honeys = (
+  await getCollection(
+    'products',
+    (p) => (import.meta.env.DEV || !p.data.draft) && p.data.category !== 'Подарочный набор'
+  )
+).sort((a, b) => a.data.order - b.data.order);
+---
+
+<section id="catalog" class="py-24">
+  <div class="mx-auto max-w-6xl px-5 text-center">
+    <div class="title-ornate reveal">
+      <h2 class="font-display text-3xl font-normal text-bark">Каталог «Душа пасеки»</h2>
+    </div>
+    <p class="font-accent reveal mb-12 text-lg text-honey-amber italic">Три сорта — три характера</p>
+
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {honeys.map((product) => (
+        <ProductCard product={product} />
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,79 @@
+---
+import { getCollection } from 'astro:content';
+import Nav from '../components/Nav.astro';
+import MobileMenu from '../components/MobileMenu.astro';
+import Footer from '../components/Footer.astro';
+import Lightbox from '../components/Lightbox.astro';
+import CartFab from '../components/CartFab.astro';
+import CartModal from '../components/CartModal.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, 'https://medovayasloboda.ru').toString();
+
+const products = await getCollection('products', (p) => import.meta.env.DEV || !p.data.draft);
+const productsData = products.map((p) => ({ id: p.id, name: p.data.name, price: p.data.price }));
+---
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Медовая Слобода" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:locale" content="ru_RU" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2 L28 9 L28 23 L16 30 L4 23 L4 9 Z' fill='%23C8922A'/%3E%3Cpath d='M16 7 L23.5 11.5 L23.5 20.5 L16 25 L8.5 20.5 L8.5 11.5 Z' fill='%233D2B1A'/%3E%3C/svg%3E" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Alegreya:ital,wght@0,400;0,500;0,700;1,400&family=Alegreya+SC:wght@400;700&family=Ruslan+Display&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <script type="application/json" id="products-data" is:inline set:html={JSON.stringify(productsData)} />
+
+  <Nav />
+  <MobileMenu />
+  <slot />
+  <Footer />
+  <Lightbox />
+  <CartFab />
+  <CartModal />
+
+  <script>
+    const reveals = document.querySelectorAll('.reveal');
+    const showAll = () => reveals.forEach((el) => el.classList.add('visible'));
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) entry.target.classList.add('visible');
+          });
+        },
+        { threshold: 0.15, rootMargin: '0px 0px -50px 0px' }
+      );
+      reveals.forEach((el) => observer.observe(el));
+
+      setTimeout(() => {
+        if (document.querySelectorAll('.reveal.visible').length === 0) showAll();
+      }, 2500);
+    } else {
+      showAll();
+    }
+  </script>
+</body>
+</html>

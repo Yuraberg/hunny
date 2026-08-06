@@ -1,0 +1,46 @@
+---
+import { getCollection } from 'astro:content';
+import JarFlip from './JarFlip.astro';
+
+const featured = (await getCollection('products', (p) => p.data.featured && !p.data.draft)).sort(
+  (a, b) => a.data.order - b.data.order
+);
+---
+
+<section id="hero" class="texture-kraft relative flex min-h-screen items-center justify-center overflow-hidden pt-24">
+  <div class="relative z-10 mx-auto max-w-3xl px-5 py-10 text-center">
+    <div class="font-label mb-7 inline-block rounded-full border border-honey-amber bg-white/30 px-6 py-2 text-sm tracking-[3px] text-honey-amber uppercase">
+      Пасека Дмитрия Бердникова
+    </div>
+    <h1 class="font-display mb-3 text-[clamp(2.8rem,7vw,5.5rem)] font-normal tracking-wide text-bark">
+      Медовая Слобода
+    </h1>
+    <p class="font-accent mb-4 text-xl text-honey-amber italic">Традиции • Польза • Вкус</p>
+    <p class="mx-auto mb-10 max-w-xl text-lg text-text-body">
+      Щедрый дар самарской земли. Натуральный мёд с вольных лугов у берегов Волги — от нашей семьи для вашей.
+    </p>
+
+    <div class="mb-10 flex items-end justify-center gap-4">
+      {featured.map((product, i) => (
+        <div class={i === 1 ? 'relative z-10 scale-110' : ''}>
+          <JarFlip
+            name={product.data.name}
+            category={product.data.category}
+            imageFront={product.data.imageFront}
+            imageBack={product.data.imageBack}
+            size="hero"
+            priority
+          />
+        </div>
+      ))}
+    </div>
+
+    <a
+      href="#order"
+      class="font-label inline-block rounded-full bg-bark px-10 py-4 text-cream shadow-[0_5px_0_var(--color-bark-medium),0_10px_26px_var(--shadow-deep)] transition-transform hover:-translate-y-0.5"
+    >
+      Заказать мёд
+    </a>
+  </div>
+  <div class="absolute bottom-6 left-1/2 -translate-x-1/2 text-2xl text-honey-amber/60">↓</div>
+</section>

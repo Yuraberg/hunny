@@ -1,0 +1,35 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import StoryCard from '../../components/StoryCard.astro';
+
+const stories = (
+  await getCollection('stories', (s) => import.meta.env.DEV || !s.data.draft)
+).sort((a, b) => b.data.publishedDate.valueOf() - a.data.publishedDate.valueOf());
+---
+
+<BaseLayout
+  title="Истории — Медовая Слобода"
+  description="Истории о мёде, пчёлах и жизни семейной пасеки Дмитрия Бердникова в Самарском крае."
+>
+  <section class="texture-paper px-5 py-24 md:py-28">
+    <div class="mx-auto max-w-6xl">
+      <div class="title-ornate reveal">
+        <h1 class="font-display text-3xl font-normal text-bark">Истории с пасеки</h1>
+      </div>
+      <p class="font-accent reveal mb-12 text-center text-lg text-honey-amber italic">
+        О мёде, пчёлах и неспешной жизни в Слободе
+      </p>
+
+      {stories.length === 0 ? (
+        <p class="text-center text-text-body/70">Скоро здесь появятся первые истории.</p>
+      ) : (
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {stories.map((story) => (
+            <StoryCard story={story} />
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+</BaseLayout>

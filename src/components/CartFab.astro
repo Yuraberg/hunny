@@ -1,0 +1,49 @@
+<button
+  type="button"
+  id="cartFab"
+  class="fixed right-5 bottom-5 z-40 flex h-16 w-16 items-center justify-center rounded-full bg-bark text-2xl text-cream shadow-[0_8px_24px_var(--shadow-deep)] transition-transform hover:-translate-y-0.5"
+  aria-label="Открыть корзину"
+>
+  🧺
+  <span
+    id="cartFabBadge"
+    class="absolute -top-1 -right-1 hidden h-6 w-6 items-center justify-center rounded-full bg-forest text-xs font-bold text-white"
+  >
+    0
+  </span>
+</button>
+
+<script>
+  import { addToCart, initCart } from '../lib/cart';
+
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.add-to-cart-btn');
+    if (!btn || btn.disabled) return;
+    const id = btn.dataset.productId;
+    if (!id) return;
+    addToCart(id);
+
+    const original = btn.textContent;
+    btn.textContent = '✓ Добавлено';
+    btn.classList.add('bg-forest');
+    setTimeout(() => {
+      btn.textContent = original;
+      btn.classList.remove('bg-forest');
+    }, 1200);
+  });
+
+  document.getElementById('cartFab')?.addEventListener('click', () => {
+    document.dispatchEvent(new CustomEvent('cart:open'));
+  });
+
+  document.addEventListener('cart:change', ((e: CustomEvent) => {
+    const badge = document.getElementById('cartFabBadge');
+    if (!badge) return;
+    const count = e.detail.count as number;
+    badge.textContent = String(count);
+    badge.classList.toggle('hidden', count === 0);
+    badge.classList.toggle('flex', count > 0);
+  }) as EventListener);
+
+  initCart();
+</script>

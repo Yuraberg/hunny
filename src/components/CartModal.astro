@@ -1,0 +1,104 @@
+<div id="cartOverlay" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
+  <div
+    id="cartModal"
+    class="flex max-h-[85vh] w-full max-w-md flex-col rounded-2xl bg-warm-white shadow-2xl"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="cartModalTitle"
+  >
+    <div class="flex items-center justify-between border-b border-cream-dark p-5">
+      <h3 id="cartModalTitle" class="font-display text-xl text-bark">Ваша корзина</h3>
+      <button id="cartModalClose" class="flex h-11 w-11 items-center justify-center rounded-full hover:bg-cream" aria-label="Закрыть корзину">✕</button>
+    </div>
+    <div id="cartModalBody" class="flex-1 overflow-y-auto p-5"></div>
+    <div id="cartModalFooter" class="border-t border-cream-dark p-5"></div>
+  </div>
+</div>
+
+<script>
+  import { getCart, getProduct, changeQty, removeFromCart, clearCart, cartTotal } from '../lib/cart';
+
+  const overlay = document.getElementById('cartOverlay');
+  const body = document.getElementById('cartModalBody');
+  const footer = document.getElementById('cartModalFooter');
+
+  function escapeHtml(str: string) {
+    return str.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+  }
+
+  function render() {
+    const cart = getCart();
+    if (!body || !footer) return;
+
+    if (cart.length === 0) {
+      body.innerHTML = `<div class="text-center py-10">
+        <p class="mb-4 text-text-body">Корзина пуста — загляните в каталог 🍯</p>
+        <a href="#catalog" class="font-label inline-block rounded-full bg-bark px-6 py-3 text-cream" id="cartGoCatalog">В каталог</a>
+      </div>`;
+      footer.innerHTML = '';
+      document.getElementById('cartGoCatalog')?.addEventListener('click', close);
+      return;
+    }
+
+    body.innerHTML = cart
+      .map((item) => {
+        const p = getProduct(item.id);
+        if (!p) return '';
+        return `<div class="flex items-center justify-between gap-3 border-b border-cream-dark py-3">
+          <div>
+            <div class="font-label text-bark">${escapeHtml(p.name)}</div>
+            <div class="text-sm text-honey-amber">${p.price.toLocaleString('ru-RU')} ₽ / шт.</div>
+          </div>
+          <div class="flex items-center gap-1">
+            <button type="button" class="qty-btn flex h-11 w-11 items-center justify-center rounded-full border border-cream-dark" data-id="${item.id}" data-delta="-1" aria-label="Уменьшить количество">−</button>
+            <span class="min-w-[20px] text-center">${item.qty}</span>
+            <button type="button" class="qty-btn flex h-11 w-11 items-center justify-center rounded-full border border-cream-dark" data-id="${item.id}" data-delta="1" aria-label="Увеличить количество">+</button>
+          </div>
+          <button type="button" class="remove-btn flex h-11 w-11 shrink-0 items-center justify-center text-text-body/60 hover:text-text-body" data-id="${item.id}" aria-label="Убрать из корзины">✕</button>
+        </div>`;
+      })
+      .join('');
+
+    footer.innerHTML = `
+      <div class="mb-4 flex items-center justify-between">
+        <span>Итого:</span>
+        <strong class="text-xl text-honey-amber">${cartTotal().toLocaleString('ru-RU')} ₽</strong>
+      </div>
+      <a href="#order" class="font-label block rounded-full bg-bark px-6 py-3 text-center text-cream" id="cartCheckout">Оформить заказ</a>
+      <button type="button" class="mt-3 w-full text-center text-sm text-text-body/60 hover:text-text-body" id="cartClear">Очистить корзину</button>
+    `;
+
+    body.querySelectorAll<HTMLButtonElement>('.qty-btn').forEach((btn) =>
+      btn.addEventListener('click', () => changeQty(btn.dataset.id!, Number(btn.dataset.delta)))
+    );
+    body.querySelectorAll<HTMLButtonElement>('.remove-btn').forEach((btn) =>
+      btn.addEventListener('click', () => removeFromCart(btn.dataset.id!))
+    );
+    document.getElementById('cartCheckout')?.addEventListener('click', close);
+    document.getElementById('cartClear')?.addEventListener('click', clearCart);
+  }
+
+  function open() {
+    overlay?.classList.remove('hidden');
+    overlay?.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function close() {
+    overlay?.classList.add('hidden');
+    overlay?.classList.remove('flex');
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('cart:open', open);
+  document.getElementById('cartModalClose')?.addEventListener('click', close);
+  overlay?.addEventListener('click', (e) => {
+    if (e.target === overlay) close();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !overlay?.classList.contains('hidden')) close();
+  });
+
+  document.addEventListener('cart:change', render as EventListener);
+  render();
+</script>

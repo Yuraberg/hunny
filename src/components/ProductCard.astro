@@ -1,0 +1,36 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import JarFlip from './JarFlip.astro';
+
+interface Props {
+  product: CollectionEntry<'products'>;
+}
+
+const { product } = Astro.props;
+const { name, category, slogan, description, price, imageFront, imageBack, hasFlip, inStock } = product.data;
+---
+
+<div class="product-card reveal flex flex-col rounded-2xl bg-warm-white p-5 shadow-[0_4px_16px_var(--shadow)]">
+  <div class="mx-auto mb-4 w-[70%]">
+    {hasFlip ? (
+      <JarFlip name={name} category={category} imageFront={imageFront} imageBack={imageBack} size="catalog" />
+    ) : (
+      <div class="arch-frame relative aspect-[4/5] w-full">
+        <img src={imageFront.src} alt={`${name} — ${category}`} class="h-full w-full object-cover" loading="lazy" />
+      </div>
+    )}
+  </div>
+  <h3 class="font-label text-xl text-bark">{name}</h3>
+  <p class="text-sm text-honey-amber">{category}</p>
+  {slogan && <div class="font-accent my-2 text-honey-gold italic">{slogan}</div>}
+  <p class="mb-4 flex-1 text-sm text-text-body">{description}</p>
+  <div class="mb-3 font-semibold text-bark">от {price.toLocaleString('ru-RU')} ₽</div>
+  <button
+    type="button"
+    class="add-to-cart-btn font-label rounded-full bg-bark px-6 py-3 text-cream shadow-[0_4px_0_var(--color-bark-medium)] transition-transform hover:-translate-y-0.5 disabled:opacity-50"
+    data-product-id={product.id}
+    disabled={!inStock}
+  >
+    {inStock ? 'В корзину' : 'Нет в наличии'}
+  </button>
+</div>

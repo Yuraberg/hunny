@@ -1,0 +1,72 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  name: string;
+  category: string;
+  imageFront: ImageMetadata;
+  imageBack?: ImageMetadata;
+  size?: 'hero' | 'catalog';
+  priority?: boolean;
+}
+
+const { name, category, imageFront, imageBack, size = 'catalog', priority = false } = Astro.props;
+
+const sizeClasses =
+  size === 'hero'
+    ? 'w-[150px] h-[190px] sm:w-[190px] sm:h-[230px]'
+    : 'w-full aspect-[4/5]';
+---
+
+<div
+  class={`arch-frame jar-flip relative ${sizeClasses}`}
+  tabindex="0"
+  role="button"
+  aria-pressed="false"
+  aria-label={`Баночка «${name}»: показать оборот этикетки`}
+>
+  <span class="absolute -top-3 left-1/2 -translate-x-1/2 text-lg" aria-hidden="true">🐝</span>
+  <div class="jar-flip-inner">
+    <div class="jar-flip-front">
+      <Image
+        src={imageFront}
+        alt={`Банка мёда «${name}» — ${category}`}
+        width={400}
+        height={480}
+        loading={priority ? 'eager' : 'lazy'}
+        fetchpriority={priority ? 'high' : 'auto'}
+      />
+    </div>
+    {imageBack && (
+      <div class="jar-flip-back">
+        <Image
+          src={imageBack}
+          alt={`Оборот этикетки «${name}» с описанием`}
+          width={400}
+          height={480}
+          loading="lazy"
+        />
+      </div>
+    )}
+  </div>
+  <span
+    class="absolute top-2 right-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-warm-white/90 text-sm shadow"
+    aria-hidden="true"
+  >
+    🔄
+  </span>
+  {imageBack && (
+    <button
+      type="button"
+      class="zoom-badge absolute top-2 left-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-warm-white/90 text-sm shadow"
+      aria-label={`Увеличить фото «${name}»`}
+      data-full={imageFront.src}
+      data-alt={`Банка мёда «${name}» — ${category}`}
+      data-full-back={imageBack.src}
+      data-alt-back={`Оборот этикетки «${name}»`}
+    >
+      🔍
+    </button>
+  )}
+</div>

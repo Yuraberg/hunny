@@ -1,0 +1,79 @@
+---
+const links = [
+  { href: '/#about', label: 'Наша история' },
+  { href: '/#catalog', label: 'Каталог' },
+  { href: '/#gift', label: 'Подарочные наборы' },
+  { href: '/stories', label: 'Истории' },
+  { href: '/wiki', label: 'Энциклопедия' },
+  { href: '/#order', label: 'Заказать' },
+  { href: '/#contacts', label: 'Контакты' },
+];
+---
+
+<nav
+  id="nav"
+  class="fixed top-0 left-0 z-50 w-full px-5 transition-all duration-400 bg-transparent"
+>
+  <div class="mx-auto flex h-[70px] max-w-6xl items-center justify-between">
+    <a href="#hero" class="inline-flex items-center">
+      <picture>
+        <source type="image/webp" srcset="/img/logo-badge.webp" />
+        <img
+          src="/img/logo-badge.png"
+          alt="Медовая Слобода"
+          width="630"
+          height="495"
+          class="block h-[52px] w-auto rounded-[10px] shadow-[0_3px_12px_rgba(0,0,0,0.35)] transition-transform duration-300 hover:scale-[1.04]"
+        />
+      </picture>
+    </a>
+    <ul class="hidden gap-8 md:flex">
+      {links.map((link) => (
+        <li>
+          <a
+            href={link.href}
+            class="nav-link relative font-body text-[0.95rem] tracking-wide text-bark transition-colors duration-300 hover:text-honey-amber"
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+    <button
+      id="burger"
+      class="flex flex-col gap-[5px] border-none bg-transparent p-[5px] md:hidden"
+      aria-label="Меню"
+    >
+      <span class="block h-[2px] w-[26px] bg-bark transition-all duration-300"></span>
+      <span class="block h-[2px] w-[26px] bg-bark transition-all duration-300"></span>
+      <span class="block h-[2px] w-[26px] bg-bark transition-all duration-300"></span>
+    </button>
+  </div>
+</nav>
+
+<script>
+  const nav = document.getElementById('nav');
+  const links = nav?.querySelectorAll<HTMLAnchorElement>('.nav-link');
+  const burgerBars = document.querySelectorAll<HTMLSpanElement>('#burger span');
+
+  const onScroll = () => {
+    const scrolled = window.scrollY > 50;
+    nav?.classList.toggle('bg-bark/95', scrolled);
+    nav?.classList.toggle('backdrop-blur-md', scrolled);
+    nav?.classList.toggle('shadow-[0_2px_20px_var(--shadow-deep)]', scrolled);
+    links?.forEach((link) => {
+      link.classList.toggle('text-cream', scrolled);
+      link.classList.toggle('text-bark', !scrolled);
+    });
+    burgerBars?.forEach((bar) => {
+      bar.classList.toggle('bg-cream', scrolled);
+      bar.classList.toggle('bg-bark', !scrolled);
+    });
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  document.getElementById('burger')?.addEventListener('click', () => {
+    document.getElementById('mobileMenu')?.classList.toggle('flex');
+    document.getElementById('mobileMenu')?.classList.toggle('hidden');
+  });
+</script>

@@ -1,0 +1,215 @@
+---
+---
+
+<section id="order" class="texture-paper px-5 py-20 md:py-28">
+  <div class="mx-auto max-w-5xl">
+    <h2 class="title-ornate reveal text-center">Размещение заказа</h2>
+    <p class="reveal mb-12 text-center text-lg text-text-body/80">Мёд прямо с пасеки — к вашему столу</p>
+
+    <div class="grid gap-10 md:grid-cols-2 md:gap-14">
+      <div class="reveal">
+        <h3 class="font-label mb-4 text-xl text-bark">Как это работает</h3>
+        <p class="mb-5 text-text-body">
+          Заказать натуральный мёд из «Медовой Слободы» очень просто. Мы доставляем по всей России,
+          а в Самаре и области — лично привезём и расскажем о каждом сорте.
+        </p>
+        <ol class="space-y-3 text-text-body">
+          <li class="flex gap-3"><span class="font-label text-honey-amber">1.</span>Выберите сорт мёда или подарочный набор</li>
+          <li class="flex gap-3"><span class="font-label text-honey-amber">2.</span>Заполните форму заказа или напишите нам</li>
+          <li class="flex gap-3"><span class="font-label text-honey-amber">3.</span>Мы свяжемся с вами для подтверждения</li>
+          <li class="flex gap-3"><span class="font-label text-honey-amber">4.</span>Бережно упакуем и отправим ваш заказ</li>
+        </ol>
+      </div>
+
+      <form id="orderForm" novalidate class="reveal rounded-2xl bg-warm-white p-6 shadow-lg md:p-8">
+        <h3 class="font-label mb-5 text-xl text-bark">Оформить заказ</h3>
+
+        <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label for="fName" class="mb-1 block text-sm text-text-body/80">Ваше имя</label>
+            <input id="fName" name="name" type="text" placeholder="Как вас зовут?" autocomplete="name" required
+              class="w-full rounded-lg border border-cream-dark px-3 py-2.5 focus:border-honey-gold focus:outline-none" />
+          </div>
+          <div>
+            <label for="fPhone" class="mb-1 block text-sm text-text-body/80">Телефон</label>
+            <input id="fPhone" name="phone" type="tel" placeholder="+7 (___) ___-__-__" autocomplete="tel" required
+              class="w-full rounded-lg border border-cream-dark px-3 py-2.5 focus:border-honey-gold focus:outline-none" />
+          </div>
+        </div>
+
+        <div id="orderSummary" class="mb-4 rounded-lg bg-cream/60 p-4 text-sm"></div>
+
+        <div class="mb-4">
+          <label for="fAddress" class="mb-1 block text-sm text-text-body/80">Адрес доставки</label>
+          <input id="fAddress" name="address" type="text" placeholder="Город, улица, дом" autocomplete="street-address"
+            class="w-full rounded-lg border border-cream-dark px-3 py-2.5 focus:border-honey-gold focus:outline-none" />
+        </div>
+        <div class="mb-4">
+          <label for="fComment" class="mb-1 block text-sm text-text-body/80">Комментарий к заказу</label>
+          <textarea id="fComment" name="comment" placeholder="Количество, особые пожелания, вопросы..." rows="3"
+            class="w-full resize-y rounded-lg border border-cream-dark px-3 py-2.5 focus:border-honey-gold focus:outline-none"></textarea>
+        </div>
+
+        <div class="absolute -left-[9999px]" aria-hidden="true">
+          <label for="fWebsite">Не заполняйте это поле</label>
+          <input id="fWebsite" name="website" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <div class="mb-5 flex items-start gap-2">
+          <input id="fConsent" name="consent" type="checkbox" required class="mt-1 h-4 w-4 shrink-0" />
+          <label for="fConsent" class="text-sm text-text-body/80">
+            Я согласен(-на) на обработку персональных данных и принимаю
+            <a href="/privacy" target="_blank" rel="noopener" class="text-honey-amber hover:underline">политику конфиденциальности</a>
+          </label>
+        </div>
+
+        <button type="submit" class="btn-submit font-label w-full rounded-full bg-bark px-6 py-3.5 text-cream transition disabled:opacity-60">
+          Отправить заказ
+        </button>
+        <div id="formStatus" role="status" aria-live="polite" class="empty:hidden"></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { getCart, getProduct, cartTotal, clearCart } from '../lib/cart';
+
+  const ORDER_ENDPOINT = '/api/order';
+  const WHATSAPP_PHONE = '79335355539';
+
+  const form = document.getElementById('orderForm') as HTMLFormElement;
+  const statusEl = document.getElementById('formStatus')!;
+  const summaryEl = document.getElementById('orderSummary')!;
+  const submitBtn = form.querySelector('.btn-submit') as HTMLButtonElement;
+
+  function escapeHtml(str: string) {
+    return str.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+  }
+
+  function renderSummary() {
+    const cart = getCart();
+    if (cart.length === 0) {
+      summaryEl.innerHTML =
+        '<p class="text-text-body/70">Корзина пуста. <a href="#catalog" class="text-honey-amber hover:underline">Выберите мёд в каталоге</a> — он появится здесь.</p>';
+      return;
+    }
+    const lines = cart
+      .map((item) => {
+        const p = getProduct(item.id);
+        if (!p) return '';
+        return `<li class="flex justify-between py-1"><span>${escapeHtml(p.name)} × ${item.qty}</span><span>${(p.price * item.qty).toLocaleString('ru-RU')} ₽</span></li>`;
+      })
+      .join('');
+    summaryEl.innerHTML = `
+      <ul class="mb-2 divide-y divide-cream-dark/50">${lines}</ul>
+      <div class="flex justify-between border-t border-cream-dark pt-2 font-label text-base text-bark">
+        <span>Итого</span><span>${cartTotal().toLocaleString('ru-RU')} ₽</span>
+      </div>
+    `;
+  }
+
+  function showStatus(type: 'ok' | 'err', html: string) {
+    statusEl.className = `mt-4 rounded-lg p-3 text-sm ${type === 'ok' ? 'bg-forest/10 text-forest-dark' : 'bg-red-100 text-red-800'}`;
+    statusEl.innerHTML = html;
+  }
+
+  function buildWhatsappText(d: { name: string; phone: string; address: string; comment: string }) {
+    const cart = getCart();
+    const items = cart
+      .map((item) => {
+        const p = getProduct(item.id);
+        return p ? `  • ${p.name} × ${item.qty} = ${(p.price * item.qty).toLocaleString('ru-RU')} ₽` : '';
+      })
+      .join('\n');
+    return [
+      'Новый заказ с сайта «Медовая Слобода»',
+      '',
+      'Имя: ' + d.name,
+      'Телефон: ' + d.phone,
+      'Товары:',
+      items,
+      'Итого: ' + cartTotal().toLocaleString('ru-RU') + ' ₽',
+      d.address ? 'Адрес: ' + d.address : null,
+      d.comment ? 'Комментарий: ' + d.comment : null,
+    ]
+      .filter(Boolean)
+      .join('\n');
+  }
+
+  async function handleSubmit(e: SubmitEvent) {
+    e.preventDefault();
+
+    const honeypot = (form.elements.namedItem('website') as HTMLInputElement).value;
+    if (honeypot) return;
+
+    const cart = getCart();
+    const data = {
+      name: (form.elements.namedItem('name') as HTMLInputElement).value.trim(),
+      phone: (form.elements.namedItem('phone') as HTMLInputElement).value.trim(),
+      address: (form.elements.namedItem('address') as HTMLInputElement).value.trim(),
+      comment: (form.elements.namedItem('comment') as HTMLTextAreaElement).value.trim(),
+    };
+
+    if (cart.length === 0) {
+      showStatus('err', 'Корзина пуста — добавьте хотя бы один товар из каталога.');
+      return;
+    }
+    if (!data.name || !data.phone) {
+      showStatus('err', 'Пожалуйста, заполните имя и телефон.');
+      return;
+    }
+    const digits = data.phone.replace(/\D/g, '');
+    if (digits.length < 10) {
+      showStatus('err', 'Проверьте номер телефона — кажется, он неполный.');
+      return;
+    }
+    if (!(form.elements.namedItem('consent') as HTMLInputElement).checked) {
+      showStatus('err', 'Чтобы отправить заказ, подтвердите согласие на обработку персональных данных.');
+      return;
+    }
+
+    const items = cart.map((item) => {
+      const p = getProduct(item.id)!;
+      return { id: item.id, name: p.name, price: p.price, qty: item.qty };
+    });
+    const total = cartTotal();
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Отправляем...';
+
+    try {
+      const res = await fetch(ORDER_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...data, items, total }),
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+
+      form.reset();
+      clearCart();
+      submitBtn.textContent = '✓ Заказ отправлен!';
+      showStatus('ok', 'Спасибо! Заявка принята — мы свяжемся с вами в ближайшее время для подтверждения.');
+      setTimeout(() => {
+        submitBtn.textContent = 'Отправить заказ';
+      }, 4000);
+    } catch {
+      const url = 'https://wa.me/' + WHATSAPP_PHONE + '?text=' + encodeURIComponent(buildWhatsappText(data));
+      window.open(url, '_blank', 'noopener');
+      showStatus(
+        'ok',
+        'Не удалось отправить заказ через сайт — мы открыли WhatsApp с готовым текстом, осталось нажать «Отправить». ' +
+          'Если окно не открылось, позвоните нам: <a href="tel:+79335355539" class="underline">+7 (933) 535-55-39</a>.'
+      );
+      form.reset();
+      clearCart();
+      submitBtn.textContent = 'Отправить заказ';
+    } finally {
+      submitBtn.disabled = false;
+    }
+  }
+
+  form.addEventListener('submit', handleSubmit);
+  document.addEventListener('cart:change', renderSummary as EventListener);
+  renderSummary();
+</script>

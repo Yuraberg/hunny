@@ -1,0 +1,65 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import stubs from '../../content/wiki-stubs.json';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('wiki', (a) => import.meta.env.DEV || !a.data.draft);
+  const articlePaths = articles.map((article) => ({
+    params: { slug: article.id },
+    props: { kind: 'article' as const, article },
+  }));
+
+  const stubPaths = Object.entries(stubs as Record<string, string>).map(([slug, title]) => ({
+    params: { slug },
+    props: { kind: 'stub' as const, title },
+  }));
+
+  return [...articlePaths, ...stubPaths];
+}
+
+const { kind } = Astro.props;
+
+let title: string;
+let description: string;
+let category: string | null = null;
+let Content: any = null;
+
+if (kind === 'article') {
+  const { article } = Astro.props;
+  title = article.data.title;
+  description = article.data.excerpt;
+  category = article.data.category;
+  ({ Content } = await render(article));
+} else {
+  title = Astro.props.title;
+  description = `Статья «${Astro.props.title}» готовится и скоро появится в медовой энциклопедии.`;
+}
+---
+
+<BaseLayout title={`${title} — Медовая энциклопедия`} description={description}>
+  <article class="texture-paper px-5 py-24 md:py-28">
+    <div class="mx-auto max-w-2xl">
+      <a href="/wiki" class="mb-6 inline-block text-honey-amber hover:underline">← Вся энциклопедия</a>
+
+      {category && (
+        <span class="font-label mb-3 inline-block rounded-full bg-cream px-3 py-1 text-xs text-honey-amber">
+          {category}
+        </span>
+      )}
+
+      <h1 class="font-display mb-8 text-3xl text-bark">{title}</h1>
+
+      {kind === 'article' ? (
+        <div class="wiki-content text-text-body">
+          <Content />
+        </div>
+      ) : (
+        <div class="wiki-content text-text-body">
+          <p>Эта статья ещё готовится и скоро появится в энциклопедии.</p>
+          <p><a href="/wiki">← Вернуться ко всем статьям</a></p>
+        </div>
+      )}
+    </div>
+  </article>
+</BaseLayout>

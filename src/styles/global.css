@@ -1,0 +1,298 @@
+@import "tailwindcss";
+
+/* ============================================================
+   ДИЗАЙН-ТОКЕНЫ — перенесены 1:1 из прежнего index.html (:root)
+   ============================================================ */
+@theme {
+  --color-honey-gold: #C8922A;
+  --color-honey-light: #E8B84B;
+  --color-honey-amber: #A16B1A;
+  --color-cream: #F5ECD7;
+  --color-cream-dark: #E8D9B8;
+  --color-bark: #3D2B1A;
+  --color-bark-light: #5C3D22;
+  --color-bark-medium: #4A3420;
+  --color-parchment: #F0E6CE;
+  --color-kraft: #E3C892;
+  --color-kraft-dark: #C9A667;
+  --color-forest: #4A6B3A;
+  --color-forest-dark: #2E4A24;
+  --color-warm-white: #FFF8EC;
+  --color-text-dark: #2C1810;
+  --color-text-body: #4A3828;
+
+  --font-display: 'Ruslan Display', 'Alegreya SC', serif;
+  --font-label: 'Alegreya SC', serif;
+  --font-body: 'Alegreya', Georgia, serif;
+  --font-accent: 'Cormorant Garamond', serif;
+}
+
+/* Тени с прозрачностью — не выражаются как цвета темы, оставляем переменными */
+:root {
+  --shadow: rgba(60, 40, 20, 0.15);
+  --shadow-deep: rgba(40, 25, 10, 0.3);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-text-body);
+  background: var(--color-warm-white);
+  overflow-x: hidden;
+  line-height: 1.7;
+}
+
+/* <picture> не должен создавать свой бокс — стили применяются к вложенному img */
+picture {
+  display: contents;
+}
+
+@layer components {
+  /* ===== TEXTURES ===== */
+  .texture-paper {
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(200, 146, 42, 0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 50%, rgba(200, 146, 42, 0.04) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  }
+
+  .texture-kraft {
+    background-color: var(--color-kraft);
+    background-image:
+      radial-gradient(ellipse at 15% 20%, rgba(255,255,255,0.12) 0%, transparent 45%),
+      radial-gradient(ellipse at 85% 80%, rgba(120, 85, 30, 0.1) 0%, transparent 50%),
+      repeating-linear-gradient(90deg, rgba(120,85,30,0.03) 0px, rgba(120,85,30,0.03) 1px, transparent 1px, transparent 3px),
+      url("data:image/svg+xml,%3Csvg width='120' height='120' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  }
+
+  .texture-wood {
+    background-color: var(--color-bark);
+    background-image:
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 2px,
+        rgba(255,255,255,0.02) 2px,
+        rgba(255,255,255,0.02) 4px
+      ),
+      repeating-linear-gradient(
+        0deg,
+        rgba(0,0,0,0.05) 0px,
+        transparent 2px,
+        transparent 40px,
+        rgba(0,0,0,0.05) 42px
+      ),
+      linear-gradient(180deg, rgba(0,0,0,0.1) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.1) 100%);
+  }
+
+  /* ===== TORN PAPER DIVIDERS ===== */
+  .torn {
+    width: 100%;
+    height: 30px;
+    position: relative;
+    z-index: 2;
+  }
+  .torn-b {
+    clip-path: polygon(0% 0%,100% 0%,100% 100%,97% 55%,94% 100%,91% 55%,88% 100%,85% 55%,82% 100%,79% 55%,76% 100%,73% 55%,70% 100%,67% 55%,64% 100%,61% 55%,58% 100%,55% 55%,52% 100%,49% 55%,46% 100%,43% 55%,40% 100%,37% 55%,34% 100%,31% 55%,28% 100%,25% 55%,22% 100%,19% 55%,16% 100%,13% 55%,10% 100%,7% 55%,4% 100%,1% 55%,0% 100%);
+    margin-bottom: -1px;
+  }
+  .torn-t {
+    clip-path: polygon(0% 100%,100% 100%,100% 0%,97% 45%,94% 0%,91% 45%,88% 0%,85% 45%,82% 0%,79% 45%,76% 0%,73% 45%,70% 0%,67% 45%,64% 0%,61% 45%,58% 0%,55% 45%,52% 0%,49% 45%,46% 0%,43% 45%,40% 0%,37% 45%,34% 0%,31% 45%,28% 0%,25% 45%,22% 0%,19% 45%,16% 0%,13% 45%,10% 0%,7% 45%,4% 0%,1% 45%,0% 0%);
+    margin-top: -1px;
+  }
+
+  /* ===== DECORATIVE BORDERS ===== */
+  .ornament-divider {
+    text-align: center;
+    padding: 20px 0;
+    opacity: 0.6;
+  }
+  .ornament-divider::before {
+    content: '✦ ❧ ✦';
+    font-size: 1.2rem;
+    color: var(--color-honey-gold);
+    letter-spacing: 12px;
+  }
+
+  .title-ornate {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 15px;
+  }
+  .title-ornate svg { flex-shrink: 0; opacity: 0.85; }
+  .title-ornate h2 { margin-bottom: 0; }
+
+  /* ===== ARCH FRAME — форма баночки-арки (герой + каталог) ===== */
+  .arch-frame {
+    position: relative;
+    padding: 16px 16px 0;
+    background: var(--color-warm-white);
+    border-radius: 50% 50% 10px 10px;
+    box-shadow: 0 10px 34px var(--shadow-deep);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+  }
+  .arch-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50% 50% 6px 6px;
+    display: block;
+  }
+  .arch-frame::before {
+    content: '';
+    position: absolute;
+    top: 26px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 56px);
+    height: 12px;
+    background-image: radial-gradient(circle, var(--color-honey-gold) 1.6px, transparent 2px);
+    background-size: 10px 10px;
+    background-repeat: repeat-x;
+    opacity: 0.6;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* ===== JAR FLIP — 3D-переворот баночки (front/back лейбл) ===== */
+  .jar-flip {
+    perspective: 1200px;
+    cursor: pointer;
+  }
+  .jar-flip-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+    transform-style: preserve-3d;
+  }
+  .jar-flip.flipped .jar-flip-inner { transform: rotateY(180deg); }
+  .jar-flip-front, .jar-flip-back {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+  }
+  .jar-flip-back { transform: rotateY(180deg); }
+
+  /* ===== LIGHTBOX ===== */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    background: rgba(20, 12, 4, 0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    padding: 24px;
+  }
+  .lightbox.open { opacity: 1; visibility: visible; }
+  .lightbox img {
+    max-width: 90vw;
+    max-height: 90vh;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .lightbox-close {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255,255,255,0.12);
+    color: var(--color-warm-white);
+    font-size: 1.3rem;
+    cursor: pointer;
+  }
+
+  /* ===== SCROLL REVEAL ===== */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ===== STORY CONTENT — типографика для markdown-текста истории ===== */
+  .story-content h2 {
+    font-family: var(--font-label);
+    color: var(--color-bark);
+    font-size: 1.4rem;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  .story-content p {
+    margin-bottom: 1.25rem;
+  }
+  .story-content ul, .story-content ol {
+    margin-bottom: 1.25rem;
+    padding-left: 1.5rem;
+  }
+  .story-content ul { list-style: disc; }
+  .story-content ol { list-style: decimal; }
+  .story-content li { margin-bottom: 0.4rem; }
+  .story-content strong { color: var(--color-bark); }
+  .story-content blockquote {
+    border-left: 3px solid var(--color-honey-gold);
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    font-family: var(--font-accent);
+    font-style: italic;
+    color: var(--color-honey-amber);
+  }
+
+  /* ===== WIKI CONTENT — типографика для статей энциклопедии ===== */
+  .wiki-content h2 {
+    font-family: var(--font-label);
+    color: var(--color-bark);
+    font-size: 1.35rem;
+    margin-top: 2.25rem;
+    margin-bottom: 0.75rem;
+  }
+  .wiki-content h3 {
+    font-family: var(--font-label);
+    color: var(--color-bark);
+    font-size: 1.1rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .wiki-content p {
+    margin-bottom: 1.1rem;
+  }
+  .wiki-content ul, .wiki-content ol {
+    margin-bottom: 1.1rem;
+    padding-left: 1.5rem;
+  }
+  .wiki-content ul { list-style: disc; }
+  .wiki-content ol { list-style: decimal; }
+  .wiki-content ul ul, .wiki-content ol ul { list-style: circle; margin-bottom: 0.25rem; }
+  .wiki-content li { margin-bottom: 0.4rem; }
+  .wiki-content strong { color: var(--color-bark); }
+  .wiki-content a {
+    color: var(--color-honey-amber);
+    text-decoration: underline;
+    text-decoration-color: var(--color-honey-gold);
+    text-underline-offset: 2px;
+  }
+  .wiki-content a:hover { color: var(--color-bark); }
+  .wiki-content blockquote {
+    border-left: 3px solid var(--color-honey-gold);
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    font-family: var(--font-accent);
+    font-style: italic;
+    color: var(--color-honey-amber);
+  }
+}

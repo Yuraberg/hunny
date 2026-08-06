@@ -1,0 +1,30 @@
+---
+import { getCollection } from 'astro:content';
+import ProductCard from './ProductCard.astro';
+
+const gifts = (
+  await getCollection(
+    'products',
+    (p) => (import.meta.env.DEV || !p.data.draft) && p.data.category === 'Подарочный набор'
+  )
+).sort((a, b) => a.data.order - b.data.order);
+---
+
+{
+  gifts.length > 0 && (
+    <section id="gift" class="texture-kraft py-24">
+      <div class="mx-auto max-w-6xl px-5 text-center">
+        <div class="title-ornate reveal">
+          <h2 class="font-display text-3xl font-normal text-bark">Подарочные наборы</h2>
+        </div>
+        <p class="font-accent reveal mb-12 text-lg text-honey-amber italic">Душа Слободы — в подарок</p>
+
+        <div class="mx-auto grid max-w-md grid-cols-1 gap-6 sm:max-w-3xl sm:grid-cols-2 lg:max-w-none lg:grid-cols-3">
+          {gifts.map((product) => (
+            <ProductCard product={product} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}

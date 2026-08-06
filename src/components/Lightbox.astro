@@ -1,0 +1,77 @@
+<div id="lightbox" class="lightbox">
+  <button type="button" id="lightboxClose" class="lightbox-close" aria-label="Закрыть">✕</button>
+  <img id="lightboxImg" src="" alt="" />
+</div>
+
+<script>
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightboxImg') as HTMLImageElement | null;
+
+  function openLightbox(src: string, alt: string) {
+    if (!src || !lightboxImg || !lightbox) return;
+    lightboxImg.src = src;
+    lightboxImg.alt = alt || '';
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    lightbox?.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('lightboxClose')?.addEventListener('click', closeLightbox);
+  lightbox?.addEventListener('click', (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && lightbox?.classList.contains('open')) closeLightbox();
+  });
+
+  document.addEventListener('click', (e) => {
+    const badge = (e.target as HTMLElement).closest<HTMLElement>('.zoom-badge');
+    if (badge) {
+      e.stopPropagation();
+      const jar = badge.closest<HTMLElement>('.jar-flip');
+      const showBack = jar?.classList.contains('flipped') && badge.dataset.fullBack;
+      openLightbox(
+        showBack ? badge.dataset.fullBack! : badge.dataset.full || '',
+        showBack ? badge.dataset.altBack || '' : badge.dataset.alt || ''
+      );
+      return;
+    }
+
+    // клик по самому фото (без переворота) — тоже увеличивает
+    const photo = (e.target as HTMLElement).closest<HTMLElement>('.zoomable-photo');
+    if (photo && !(e.target as HTMLElement).closest('.zoom-badge')) {
+      const img = photo.querySelector('img');
+      if (img) openLightbox(photo.dataset.full || img.currentSrc || img.src, img.alt);
+    }
+  });
+
+  // ===== JAR FLIP — клик/Enter переворачивает баночку (перед/оборот) =====
+  function toggleFlip(jar: HTMLElement) {
+    const flipped = jar.classList.toggle('flipped');
+    jar.setAttribute('aria-pressed', String(flipped));
+  }
+
+  document.addEventListener('click', (e) => {
+    const jar = (e.target as HTMLElement).closest<HTMLElement>('.jar-flip');
+    if (!jar) return;
+    if ((e.target as HTMLElement).closest('.zoom-badge')) return; // клик по лупе не переворачивает
+    toggleFlip(jar);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    const active = document.activeElement as HTMLElement | null;
+    if (!active?.classList.contains('jar-flip')) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggleFlip(active);
+    }
+  });
+
+  // делаем функции доступными для инлайновых обработчиков на других островах при необходимости
+  (window as any).openLightbox = openLightbox;
+  (window as any).closeLightbox = closeLightbox;
+</script>

@@ -1,0 +1,44 @@
+---
+const cards = [
+  {
+    title: '100% натуральный',
+    text: 'Без добавок, без химии — только солнце, травы и труд пчелы',
+    svg: `<path d="M32 12C20 15 14 25 17 40c11 3 23-2 27-13 4-9 1-17-4-20-2 7-6 11-8 24" fill="#4A6B3A"/><path d="M20 40C26 30 30 22 34 13" stroke="#F5ECD7" stroke-width="1.6" stroke-linecap="round"/>`,
+  },
+  {
+    title: 'Семейная пасека',
+    text: 'Личная ответственность Дмитрия Бердникова за каждую баночку',
+    svg: `<circle cx="24" cy="20" r="7" fill="#A16B1A"/><path d="M10 46c0-10 7-16 14-16s14 6 14 16" fill="#A16B1A"/><circle cx="44" cy="26" r="5" fill="#C8922A"/><path d="M34 46c0-7 5-12 10-12s10 5 10 12" fill="#C8922A"/>`,
+  },
+  {
+    title: 'Самарский край',
+    text: 'Вольные луга у берегов Волги и Жигулёвских гор',
+    svg: `<circle cx="48" cy="14" r="6" fill="#E8B84B"/><path d="M4 46 L22 22 L32 34 L42 18 L60 46 Z" fill="#4A6B3A"/><path d="M4 46 L22 22 L32 34 L42 18 L60 46 Z" fill="#2E4A24" opacity="0.35"/>`,
+  },
+  {
+    title: 'Традиции предков',
+    text: 'Дедовские способы сбора и хранения мёда из поколения в поколение',
+    svg: `<rect x="8" y="8" width="32" height="48" rx="4" fill="#E3C892" stroke="#A16B1A" stroke-width="1.5"/><circle cx="8" cy="8" r="5" fill="#C9A667"/><circle cx="8" cy="56" r="5" fill="#C9A667"/><circle cx="40" cy="8" r="5" fill="#C9A667"/><circle cx="40" cy="56" r="5" fill="#C9A667"/><line x1="16" y1="22" x2="32" y2="22" stroke="#A16B1A" stroke-width="1.5"/><line x1="16" y1="30" x2="32" y2="30" stroke="#A16B1A" stroke-width="1.5"/><line x1="16" y1="38" x2="28" y2="38" stroke="#A16B1A" stroke-width="1.5"/>`,
+  },
+];
+---
+
+<section id="why" class="py-24">
+  <div class="mx-auto max-w-5xl px-5 text-center">
+    <div class="title-ornate reveal">
+      <h2 class="font-display text-3xl font-normal text-bark">Почему выбирают нас</h2>
+    </div>
+    <p class="font-accent reveal mb-12 text-lg text-honey-amber italic">
+      Честный продукт от честного пасечника
+    </p>
+    <div class="grid grid-cols-2 gap-6 md:grid-cols-4">
+      {cards.map((card) => (
+        <div class="reveal rounded-2xl bg-kraft p-6 text-center shadow-[0_4px_16px_var(--shadow)]">
+          <div class="mx-auto mb-4 flex h-14 items-center justify-center" set:html={`<svg width="46" height="46" viewBox="0 0 64 64" fill="none">${card.svg}</svg>`} />
+          <h4 class="font-label mb-2 text-bark">{card.title}</h4>
+          <p class="text-sm text-text-body">{card.text}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
