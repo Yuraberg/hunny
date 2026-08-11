@@ -1,0 +1,22 @@
+[
+  {
+    "id": "bogatyrskaya",
+    "price": 600,
+    "weightGrams": 900
+  },
+  {
+    "id": "giftset",
+    "price": 2500,
+    "weightGrams": 1800
+  },
+  {
+    "id": "lipovaya",
+    "price": 650,
+    "weightGrams": 900
+  },
+  {
+    "id": "lugovoy",
+    "price": 500,
+    "weightGrams": 900
+  }
+]
