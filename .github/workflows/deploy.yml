@@ -1,0 +1,41 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm ci
+
+      - run: npm run generate:products
+
+      - run: npm run build
+
+      - name: Собрать бандл для деплоя (site/ + api/)
+        run: |
+          mkdir -p deploy_bundle/site deploy_bundle/api
+          cp -r dist/. deploy_bundle/site/
+          cp -r api/. deploy_bundle/api/
+          tar czf deploy_bundle.tar.gz -C deploy_bundle .
+
+      - name: Выложить на VPS по SSH (forced command, только medovaya-deploy.sh)
+        env:
+          SSH_KEY: ${{ secrets.VPS_DEPLOY_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          cat >> ~/.ssh/known_hosts <<'EOF'
+          159.194.203.22 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOePBHd0Hg8XV6zyTeWBqON06wLGv4VfjJs1II0tZhqX
+          EOF
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes root@159.194.203.22 < deploy_bundle.tar.gz
