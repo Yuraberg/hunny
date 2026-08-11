@@ -1,0 +1,26 @@
+#!/bin/bash
+# Автодеплой "Медовой Слободы" — вызывается ТОЛЬКО через forced command
+# по выделенному SSH-ключу GitHub Actions (см. authorized_keys).
+# На вход по stdin ожидает tar.gz с подпапками site/ (собранный dist сайта)
+# и/или api/ (файлы для контейнера medovaya-api).
+set -euo pipefail
+
+TMP_DIR=$(mktemp -d)
+trap 'rm -rf "$TMP_DIR"' EXIT
+
+tar xzf - -C "$TMP_DIR"
+
+if [ -d "$TMP_DIR/site" ]; then
+  rsync -a --delete "$TMP_DIR/site/" /root/vps-new/medovaya/dist/
+  echo "[deploy] static site updated"
+fi
+
+if [ -d "$TMP_DIR/api" ]; then
+  rsync -a --delete "$TMP_DIR/api/" /root/vps-new/medovaya-api/
+  cd /root/vps-new
+  docker compose build medovaya-api
+  docker compose up -d medovaya-api
+  echo "[deploy] medovaya-api rebuilt and restarted"
+fi
+
+echo "[deploy] done: $(date -u +%FT%TZ)"

@@ -12,9 +12,39 @@ const { story } = Astro.props;
 const { title, excerpt, heroImage, tags, publishedDate, author } = story.data;
 const { Content } = await render(story);
 const dateLabel = publishedDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://medovayasloboda.ru';
+const pageUrl = `${siteUrl}${Astro.url.pathname}`;
+const imageUrl = new URL(heroImage.src, siteUrl).toString();
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BlogPosting',
+      headline: title,
+      description: excerpt,
+      image: imageUrl,
+      datePublished: publishedDate.toISOString(),
+      inLanguage: 'ru-RU',
+      mainEntityOfPage: pageUrl,
+      author: { '@type': 'Person', name: author },
+      isPartOf: { '@id': `${siteUrl}/#website` },
+      publisher: { '@id': `${siteUrl}/#business` },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Главная', item: `${siteUrl}/` },
+        { '@type': 'ListItem', position: 2, name: 'Истории с пасеки', item: `${siteUrl}/stories` },
+        { '@type': 'ListItem', position: 3, name: title, item: pageUrl },
+      ],
+    },
+  ],
+};
 ---
 
-<BaseLayout title={`${title} — Медовая Слобода`} description={excerpt}>
+<BaseLayout title={`${title} — Медовая Слобода`} description={excerpt} image={heroImage.src}>
+  <script slot="structured-data" is:inline type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
   <article class="texture-paper px-5 py-24 md:py-28">
     <div class="mx-auto max-w-2xl">
       <a href="/stories" class="mb-6 inline-block text-honey-amber hover:underline">← Все истории</a>

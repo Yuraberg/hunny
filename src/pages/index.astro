@@ -1,4 +1,5 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
 import About from '../components/About.astro';
@@ -6,12 +7,35 @@ import Catalog from '../components/Catalog.astro';
 import GiftSection from '../components/GiftSection.astro';
 import WhyUs from '../components/WhyUs.astro';
 import OrderForm from '../components/OrderForm.astro';
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://medovayasloboda.ru';
+const products = await getCollection('products', (p) => !p.data.draft);
+
+const productSchema = {
+  '@context': 'https://schema.org',
+  '@graph': products.map((product) => ({
+    '@type': 'Product',
+    name: `Мёд «${product.data.name}»`,
+    description: product.data.description,
+    image: new URL(product.data.imageFront.src, siteUrl).toString(),
+    category: product.data.category,
+    brand: { '@type': 'Brand', name: 'Медовая Слобода' },
+    offers: {
+      '@type': 'Offer',
+      price: product.data.price,
+      priceCurrency: 'RUB',
+      availability: product.data.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      seller: { '@id': `${siteUrl}/#business` },
+    },
+  })),
+};
 ---
 
 <BaseLayout
   title="Медовая Слобода — натуральный мёд с пасеки в Самаре"
   description="Натуральный мёд с семейной пасеки Дмитрия Бердникова в Самарском крае: цветочный, гречишный и липовый. Подарочные наборы в деревянной упаковке. Доставка по России, от 500 ₽."
 >
+  <script slot="structured-data" is:inline type="application/ld+json" set:html={JSON.stringify(productSchema)} />
   <Hero />
   <About />
   <Catalog />

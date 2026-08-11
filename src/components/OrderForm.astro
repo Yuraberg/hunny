@@ -39,11 +39,52 @@
 
         <div id="orderSummary" class="mb-4 rounded-lg bg-cream/60 p-4 text-sm"></div>
 
-        <div class="mb-4">
+        <fieldset class="mb-4">
+          <legend class="mb-1 block text-sm text-text-body/80">Способ доставки</legend>
+          <div class="flex flex-col gap-2 sm:flex-row">
+            <label class="flex flex-1 items-center gap-2 rounded-lg border border-cream-dark px-3 py-2.5 text-sm">
+              <input type="radio" name="deliveryType" value="address" checked class="h-4 w-4 shrink-0" />
+              Курьером / почтой
+            </label>
+            <label class="flex flex-1 items-center gap-2 rounded-lg border border-cream-dark px-3 py-2.5 text-sm">
+              <input type="radio" name="deliveryType" value="pickup" class="h-4 w-4 shrink-0" />
+              В пункт выдачи
+            </label>
+          </div>
+        </fieldset>
+
+        <div id="addressBlock" class="mb-4">
           <label for="fAddress" class="mb-1 block text-sm text-text-body/80">Адрес доставки</label>
           <input id="fAddress" name="address" type="text" placeholder="Город, улица, дом" autocomplete="street-address"
             class="w-full rounded-lg border border-cream-dark px-3 py-2.5 focus:border-honey-gold focus:outline-none" />
         </div>
+
+        <div id="pickupBlock" class="mb-4 hidden">
+          <label for="fPickupAddress" class="mb-1 block text-sm text-text-body/80">Пункт выдачи</label>
+          <div id="ya-delivery-widget" class="mb-2 empty:hidden"></div>
+          <input id="fPickupAddress" name="pickupAddress" type="text"
+            placeholder="Укажите ближайший пункт выдачи (сеть, город, адрес)"
+            class="w-full rounded-lg border border-cream-dark px-3 py-2.5 focus:border-honey-gold focus:outline-none" />
+          <p class="mt-1 text-xs text-text-body/60">
+            Карта пунктов выдачи скоро появится здесь — пока укажите пункт словами, мы уточним детали при подтверждении.
+          </p>
+          <p id="deliveryEstimate" class="mt-1 text-sm text-forest-dark empty:hidden"></p>
+        </div>
+
+        <fieldset class="mb-4">
+          <legend class="mb-1 block text-sm text-text-body/80">Способ оплаты</legend>
+          <div class="flex flex-col gap-2 sm:flex-row">
+            <label class="flex flex-1 items-center gap-2 rounded-lg border border-cream-dark px-3 py-2.5 text-sm">
+              <input type="radio" name="paymentMethod" value="cod" checked class="h-4 w-4 shrink-0" />
+              При получении
+            </label>
+            <label class="flex flex-1 items-center gap-2 rounded-lg border border-cream-dark px-3 py-2.5 text-sm">
+              <input type="radio" name="paymentMethod" value="online" class="h-4 w-4 shrink-0" />
+              Онлайн (карта, СБП)
+            </label>
+          </div>
+        </fieldset>
+
         <div class="mb-4">
           <label for="fComment" class="mb-1 block text-sm text-text-body/80">Комментарий к заказу</label>
           <textarea id="fComment" name="comment" placeholder="Количество, особые пожелания, вопросы..." rows="3"
@@ -73,7 +114,16 @@
 </section>
 
 <script>
-  import { getCart, getProduct, cartTotal, clearCart } from '../lib/cart';
+  import {
+    getCart,
+    getProduct,
+    cartTotal,
+    cartDiscount,
+    isFreeShipping,
+    FREE_SHIPPING_THRESHOLD,
+    linePricing,
+    clearCart,
+  } from '../lib/cart';
 
   const ORDER_ENDPOINT = '/api/order';
   const WHATSAPP_PHONE = '79335355539';
@@ -82,6 +132,73 @@
   const statusEl = document.getElementById('formStatus')!;
   const summaryEl = document.getElementById('orderSummary')!;
   const submitBtn = form.querySelector('.btn-submit') as HTMLButtonElement;
+  const addressBlock = document.getElementById('addressBlock')!;
+  const pickupBlock = document.getElementById('pickupBlock')!;
+  const fAddress = document.getElementById('fAddress') as HTMLInputElement;
+  const fPickupAddress = document.getElementById('fPickupAddress') as HTMLInputElement;
+  const deliveryEstimateEl = document.getElementById('deliveryEstimate')!;
+
+  // Пересчитанная стоимость доставки с сервера (0, пока тарификация
+  // Яндекс Доставки не подключена — см. /api/delivery/estimate).
+  let deliveryPrice = 0;
+
+  function pluralJars(n: number) {
+    const mod10 = n % 10;
+    const mod100 = n % 100;
+    if (mod10 === 1 && mod100 !== 11) return 'банка';
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'банки';
+    return 'банок';
+  }
+
+  // Итоговая скидка за товары уже покрывает бесплатную доставку от порога —
+  // при заказе на такую сумму курьерская оценка (deliveryPrice) в списании
+  // не участвует, хоть переменная и продолжает хранить сырую оценку.
+  function getEffectiveDeliveryPrice() {
+    return isFreeShipping(cartTotal()) ? 0 : deliveryPrice;
+  }
+
+  function getDeliveryType(): 'address' | 'pickup' {
+    return (form.elements.namedItem('deliveryType') as RadioNodeList)?.value === 'pickup' ? 'pickup' : 'address';
+  }
+
+  function getPaymentMethod(): 'online' | 'cod' {
+    return (form.elements.namedItem('paymentMethod') as RadioNodeList)?.value === 'online' ? 'online' : 'cod';
+  }
+
+  function updateDeliveryVisibility() {
+    const isPickup = getDeliveryType() === 'pickup';
+    addressBlock.classList.toggle('hidden', isPickup);
+    pickupBlock.classList.toggle('hidden', !isPickup);
+    fAddress.required = !isPickup;
+    fPickupAddress.required = isPickup;
+    if (!isPickup) {
+      deliveryPrice = 0;
+      deliveryEstimateEl.textContent = '';
+      renderSummary();
+    }
+  }
+
+  async function estimateDelivery() {
+    const cart = getCart();
+    if (cart.length === 0 || !fPickupAddress.value.trim()) return;
+    try {
+      const res = await fetch('/api/delivery/estimate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pointId: 'manual', items: cart }),
+      });
+      if (!res.ok) return; // тарификация ещё не подключена — молча пропускаем
+      const data = await res.json();
+      if (typeof data.price === 'number') {
+        deliveryPrice = data.price;
+        deliveryEstimateEl.textContent = `Доставка: ${data.price.toLocaleString('ru-RU')} ₽` +
+          (data.etaDays ? `, ~${data.etaDays} дн.` : '');
+        renderSummary();
+      }
+    } catch {
+      // сеть недоступна — доставка останется без предрасчёта, уточним при подтверждении
+    }
+  }
 
   function escapeHtml(str: string) {
     return str.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
@@ -98,14 +215,40 @@
       .map((item) => {
         const p = getProduct(item.id);
         if (!p) return '';
-        return `<li class="flex justify-between py-1"><span>${escapeHtml(p.name)} × ${item.qty}</span><span>${(p.price * item.qty).toLocaleString('ru-RU')} ₽</span></li>`;
+        const { price, percent, freeUnits } = linePricing(p.price, item.qty);
+        const badge = percent > 0 ? ` <span class="text-forest-dark">(−${percent}%)</span>` : '';
+        const freeNote =
+          freeUnits > 0 ? `<div class="text-xs text-forest-dark">+${freeUnits} ${pluralJars(freeUnits)} в подарок</div>` : '';
+        return `<li class="py-1"><div class="flex justify-between"><span>${escapeHtml(p.name)} × ${item.qty}${badge}</span><span>${price.toLocaleString('ru-RU')} ₽</span></div>${freeNote}</li>`;
       })
       .join('');
+
+    const discount = cartDiscount();
+    const total = cartTotal();
+    const effectiveDelivery = getEffectiveDeliveryPrice();
+    const freeShipping = isFreeShipping(total);
+
+    const discountLine =
+      discount > 0
+        ? `<li class="flex justify-between py-1 text-text-body/80"><span>Скидка за количество</span><span class="text-forest-dark">−${discount.toLocaleString('ru-RU')} ₽</span></li>`
+        : '';
+    const deliveryLine =
+      effectiveDelivery > 0
+        ? `<li class="flex justify-between py-1 text-text-body/80"><span>Доставка</span><span>${effectiveDelivery.toLocaleString('ru-RU')} ₽</span></li>`
+        : freeShipping
+          ? `<li class="flex justify-between py-1 text-forest-dark"><span>Доставка</span><span>Бесплатно</span></li>`
+          : '';
+
     summaryEl.innerHTML = `
-      <ul class="mb-2 divide-y divide-cream-dark/50">${lines}</ul>
+      <ul class="mb-2 divide-y divide-cream-dark/50">${lines}${discountLine}${deliveryLine}</ul>
       <div class="flex justify-between border-t border-cream-dark pt-2 font-label text-base text-bark">
-        <span>Итого</span><span>${cartTotal().toLocaleString('ru-RU')} ₽</span>
+        <span>Итого</span><span>${(total + effectiveDelivery).toLocaleString('ru-RU')} ₽</span>
       </div>
+      ${
+        !freeShipping
+          ? `<p class="mt-2 text-xs text-text-body/60">Ещё ${(FREE_SHIPPING_THRESHOLD - total).toLocaleString('ru-RU')} ₽ до бесплатной доставки</p>`
+          : ''
+      }
     `;
   }
 
@@ -119,9 +262,14 @@
     const items = cart
       .map((item) => {
         const p = getProduct(item.id);
-        return p ? `  • ${p.name} × ${item.qty} = ${(p.price * item.qty).toLocaleString('ru-RU')} ₽` : '';
+        if (!p) return '';
+        const { price, freeUnits } = linePricing(p.price, item.qty);
+        const bonus = freeUnits > 0 ? ` (+${freeUnits} ${pluralJars(freeUnits)} в подарок)` : '';
+        return `  • ${p.name} × ${item.qty} = ${price.toLocaleString('ru-RU')} ₽${bonus}`;
       })
       .join('\n');
+    const isPickup = getDeliveryType() === 'pickup';
+    const effectiveDelivery = getEffectiveDeliveryPrice();
     return [
       'Новый заказ с сайта «Медовая Слобода»',
       '',
@@ -129,8 +277,9 @@
       'Телефон: ' + d.phone,
       'Товары:',
       items,
-      'Итого: ' + cartTotal().toLocaleString('ru-RU') + ' ₽',
-      d.address ? 'Адрес: ' + d.address : null,
+      'Итого: ' + (cartTotal() + effectiveDelivery).toLocaleString('ru-RU') + ' ₽',
+      isPickup ? 'Пункт выдачи: ' + fPickupAddress.value.trim() : d.address ? 'Адрес: ' + d.address : null,
+      'Оплата: ' + (getPaymentMethod() === 'online' ? 'онлайн (карта/СБП)' : 'при получении'),
       d.comment ? 'Комментарий: ' + d.comment : null,
     ]
       .filter(Boolean)
@@ -144,10 +293,12 @@
     if (honeypot) return;
 
     const cart = getCart();
+    const deliveryType = getDeliveryType();
+    const paymentMethod = getPaymentMethod();
     const data = {
       name: (form.elements.namedItem('name') as HTMLInputElement).value.trim(),
       phone: (form.elements.namedItem('phone') as HTMLInputElement).value.trim(),
-      address: (form.elements.namedItem('address') as HTMLInputElement).value.trim(),
+      address: deliveryType === 'address' ? fAddress.value.trim() : '',
       comment: (form.elements.namedItem('comment') as HTMLTextAreaElement).value.trim(),
     };
 
@@ -164,6 +315,10 @@
       showStatus('err', 'Проверьте номер телефона — кажется, он неполный.');
       return;
     }
+    if (deliveryType === 'pickup' && !fPickupAddress.value.trim()) {
+      showStatus('err', 'Укажите пункт выдачи, куда доставить заказ.');
+      return;
+    }
     if (!(form.elements.namedItem('consent') as HTMLInputElement).checked) {
       showStatus('err', 'Чтобы отправить заказ, подтвердите согласие на обработку персональных данных.');
       return;
@@ -173,7 +328,8 @@
       const p = getProduct(item.id)!;
       return { id: item.id, name: p.name, price: p.price, qty: item.qty };
     });
-    const total = cartTotal();
+    const deliveryPoint =
+      deliveryType === 'pickup' ? { id: 'manual', address: fPickupAddress.value.trim() } : undefined;
 
     submitBtn.disabled = true;
     submitBtn.textContent = 'Отправляем...';
@@ -182,9 +338,24 @@
       const res = await fetch(ORDER_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...data, items, total }),
+        body: JSON.stringify({
+          ...data,
+          items,
+          deliveryType,
+          deliveryPoint,
+          deliveryPrice: getEffectiveDeliveryPrice(),
+          paymentMethod,
+        }),
       });
-      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const payload = await res.json().catch(() => null);
+      if (!res.ok || !payload?.ok) throw new Error('HTTP ' + res.status);
+
+      if (payload.confirmationUrl) {
+        // Онлайн-оплата: уходим на страницу ЮKassa, корзину чистим только
+        // после подтверждения оплаты вебхуком — здесь заказ ещё не оплачен.
+        window.location.href = payload.confirmationUrl;
+        return;
+      }
 
       form.reset();
       clearCart();
@@ -211,5 +382,8 @@
 
   form.addEventListener('submit', handleSubmit);
   document.addEventListener('cart:change', renderSummary as EventListener);
+  form.querySelectorAll('input[name="deliveryType"]').forEach((el) => el.addEventListener('change', updateDeliveryVisibility));
+  fPickupAddress.addEventListener('blur', estimateDelivery);
+  updateDeliveryVisibility();
   renderSummary();
 </script>

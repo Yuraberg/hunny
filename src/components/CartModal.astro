@@ -16,7 +16,18 @@
 </div>
 
 <script>
-  import { getCart, getProduct, changeQty, removeFromCart, clearCart, cartTotal } from '../lib/cart';
+  import {
+    getCart,
+    getProduct,
+    changeQty,
+    removeFromCart,
+    clearCart,
+    cartTotal,
+    cartDiscount,
+    isFreeShipping,
+    FREE_SHIPPING_THRESHOLD,
+    linePricing,
+  } from '../lib/cart';
 
   const overlay = document.getElementById('cartOverlay');
   const body = document.getElementById('cartModalBody');
@@ -24,6 +35,14 @@
 
   function escapeHtml(str: string) {
     return str.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
+  }
+
+  function pluralJars(n: number) {
+    const mod10 = n % 10;
+    const mod100 = n % 100;
+    if (mod10 === 1 && mod100 !== 11) return 'банка';
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return 'банки';
+    return 'банок';
   }
 
   function render() {
@@ -44,25 +63,57 @@
       .map((item) => {
         const p = getProduct(item.id);
         if (!p) return '';
-        return `<div class="flex items-center justify-between gap-3 border-b border-cream-dark py-3">
-          <div>
-            <div class="font-label text-bark">${escapeHtml(p.name)}</div>
-            <div class="text-sm text-honey-amber">${p.price.toLocaleString('ru-RU')} ₽ / шт.</div>
+        const { price, percent, freeUnits } = linePricing(p.price, item.qty);
+        const priceLine =
+          percent > 0
+            ? `<span class="text-text-body/40 line-through">${(p.price * item.qty).toLocaleString('ru-RU')} ₽</span> <span class="text-forest-dark">${price.toLocaleString('ru-RU')} ₽</span> <span class="text-forest-dark">(−${percent}%)</span>`
+            : `<span>${price.toLocaleString('ru-RU')} ₽</span>`;
+        const freeNote =
+          freeUnits > 0 ? `+${freeUnits} ${pluralJars(freeUnits)} в подарок 🎁` : '';
+        return `<div class="border-b border-cream-dark py-3">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <div class="font-label text-bark">${escapeHtml(p.name)}</div>
+              <div class="text-sm text-honey-amber">${p.price.toLocaleString('ru-RU')} ₽ / шт.</div>
+            </div>
+            <div class="flex items-center gap-1">
+              <button type="button" class="qty-btn flex h-11 w-11 items-center justify-center rounded-full border border-cream-dark" data-id="${item.id}" data-delta="-1" aria-label="Уменьшить количество">−</button>
+              <span class="min-w-[20px] text-center">${item.qty}</span>
+              <button type="button" class="qty-btn flex h-11 w-11 items-center justify-center rounded-full border border-cream-dark" data-id="${item.id}" data-delta="1" aria-label="Увеличить количество">+</button>
+            </div>
+            <button type="button" class="remove-btn flex h-11 w-11 shrink-0 items-center justify-center text-text-body/60 hover:text-text-body" data-id="${item.id}" aria-label="Убрать из корзины">✕</button>
           </div>
-          <div class="flex items-center gap-1">
-            <button type="button" class="qty-btn flex h-11 w-11 items-center justify-center rounded-full border border-cream-dark" data-id="${item.id}" data-delta="-1" aria-label="Уменьшить количество">−</button>
-            <span class="min-w-[20px] text-center">${item.qty}</span>
-            <button type="button" class="qty-btn flex h-11 w-11 items-center justify-center rounded-full border border-cream-dark" data-id="${item.id}" data-delta="1" aria-label="Увеличить количество">+</button>
+          <div class="mt-1 flex items-center justify-between text-sm">
+            <span class="text-forest-dark">${freeNote}</span>
+            <span>${priceLine}</span>
           </div>
-          <button type="button" class="remove-btn flex h-11 w-11 shrink-0 items-center justify-center text-text-body/60 hover:text-text-body" data-id="${item.id}" aria-label="Убрать из корзины">✕</button>
         </div>`;
       })
       .join('');
 
+    const discount = cartDiscount();
+    const total = cartTotal();
+    const freeShipping = isFreeShipping(total);
+    const remaining = FREE_SHIPPING_THRESHOLD - total;
+
     footer.innerHTML = `
-      <div class="mb-4 flex items-center justify-between">
+      ${
+        discount > 0
+          ? `<div class="mb-1 flex items-center justify-between text-sm text-text-body/70">
+               <span>Скидка за количество</span><span class="text-forest-dark">−${discount.toLocaleString('ru-RU')} ₽</span>
+             </div>`
+          : ''
+      }
+      <div class="mb-1 flex items-center justify-between">
         <span>Итого:</span>
-        <strong class="text-xl text-honey-amber">${cartTotal().toLocaleString('ru-RU')} ₽</strong>
+        <strong class="text-xl text-honey-amber">${total.toLocaleString('ru-RU')} ₽</strong>
+      </div>
+      <div class="mb-4 text-xs ${freeShipping ? 'text-forest-dark' : 'text-text-body/60'}">
+        ${
+          freeShipping
+            ? '✓ Бесплатная доставка — заказ от ' + FREE_SHIPPING_THRESHOLD.toLocaleString('ru-RU') + ' ₽'
+            : 'Ещё ' + remaining.toLocaleString('ru-RU') + ' ₽ до бесплатной доставки'
+        }
       </div>
       <a href="#order" class="font-label block rounded-full bg-bark px-6 py-3 text-center text-cream" id="cartCheckout">Оформить заказ</a>
       <button type="button" class="mt-3 w-full text-center text-sm text-text-body/60 hover:text-text-body" id="cartClear">Очистить корзину</button>

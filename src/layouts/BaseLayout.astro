@@ -11,13 +11,53 @@ import '../styles/global.css';
 interface Props {
   title: string;
   description: string;
+  image?: string;
+  noindex?: boolean;
 }
 
-const { title, description } = Astro.props;
-const canonical = new URL(Astro.url.pathname, 'https://medovayasloboda.ru').toString();
+const { title, description, image, noindex = false } = Astro.props;
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://medovayasloboda.ru';
+const canonical = new URL(Astro.url.pathname, siteUrl).toString();
+const ogImage = new URL(image ?? '/img/logo-badge.webp', siteUrl).toString();
 
 const products = await getCollection('products', (p) => import.meta.env.DEV || !p.data.draft);
 const productsData = products.map((p) => ({ id: p.id, name: p.data.name, price: p.data.price }));
+
+// Организация и сайт — общие для всех страниц, помогают Яндексу и Google
+// показать карточку компании в выдаче (Store) и sitelinks search box (WebSite).
+const businessSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Store',
+      '@id': `${siteUrl}/#business`,
+      name: 'Медовая Слобода',
+      description: 'Семейная пасека Дмитрия Бердникова в Самарском крае. Натуральный мёд без добавок: цветочный, гречишный, липовый, а также подарочные наборы.',
+      url: `${siteUrl}/`,
+      image: `${siteUrl}/img/logo-badge.webp`,
+      telephone: '+7-933-535-55-39',
+      email: 'info@medovayasloboda.ru',
+      priceRange: '500–2500 ₽',
+      currenciesAccepted: 'RUB',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Самара',
+        addressRegion: 'Самарская область',
+        addressCountry: 'RU',
+      },
+      areaServed: { '@type': 'Country', name: 'Россия' },
+      founder: { '@type': 'Person', name: 'Дмитрий Бердников' },
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${siteUrl}/#website`,
+      url: `${siteUrl}/`,
+      name: 'Медовая Слобода',
+      inLanguage: 'ru-RU',
+      publisher: { '@id': `${siteUrl}/#business` },
+    },
+  ],
+};
 ---
 
 <!DOCTYPE html>
@@ -27,6 +67,7 @@ const productsData = products.map((p) => ({ id: p.id, name: p.data.name, price: 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{title}</title>
   <meta name="description" content={description} />
+  <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow'} />
   <link rel="canonical" href={canonical} />
 
   <meta property="og:type" content="website" />
@@ -34,8 +75,15 @@ const productsData = products.map((p) => ({ id: p.id, name: p.data.name, price: 
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />
   <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
   <meta property="og:locale" content="ru_RU" />
   <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={title} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImage} />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(businessSchema)} />
+  <slot name="structured-data" />
 
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2 L28 9 L28 23 L16 30 L4 23 L4 9 Z' fill='%23C8922A'/%3E%3Cpath d='M16 7 L23.5 11.5 L23.5 20.5 L16 25 L8.5 20.5 L8.5 11.5 Z' fill='%233D2B1A'/%3E%3C/svg%3E" />
 
