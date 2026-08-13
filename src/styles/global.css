@@ -127,36 +127,20 @@ picture {
   .title-ornate svg { flex-shrink: 0; opacity: 0.85; }
   .title-ornate h2 { margin-bottom: 0; }
 
-  /* ===== ARCH FRAME — форма баночки-арки (герой + каталог) ===== */
+  /* ===== ARCH FRAME — рамка карточки-фото (герой + каталог) ===== */
   .arch-frame {
     position: relative;
-    padding: 16px 16px 0;
+    overflow: hidden;
     background: var(--color-warm-white);
-    border-radius: 50% 50% 10px 10px;
-    box-shadow: 0 10px 34px var(--shadow-deep);
+    border-radius: 16px;
+    box-shadow: 0 6px 20px var(--shadow);
     transition: transform 0.4s ease, box-shadow 0.4s ease;
   }
   .arch-frame img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 50% 50% 6px 6px;
     display: block;
-  }
-  .arch-frame::before {
-    content: '';
-    position: absolute;
-    top: 26px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: calc(100% - 56px);
-    height: 12px;
-    background-image: radial-gradient(circle, var(--color-honey-gold) 1.6px, transparent 2px);
-    background-size: 10px 10px;
-    background-repeat: repeat-x;
-    opacity: 0.6;
-    pointer-events: none;
-    z-index: 1;
   }
 
   /* ===== JAR FLIP — 3D-переворот баночки (front/back лейбл) ===== */

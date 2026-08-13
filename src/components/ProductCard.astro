@@ -21,9 +21,9 @@ const { name, category, slogan, description, price, imageFront, imageBack, hasFl
     )}
   </div>
   <h3 class="font-label text-xl text-bark">{name}</h3>
-  <p class="text-sm text-honey-amber">{category}</p>
+  <p class="text-base text-honey-amber">{category}</p>
   {slogan && <div class="font-accent my-2 text-honey-gold italic">{slogan}</div>}
-  <p class="mb-4 flex-1 text-sm text-text-body">{description}</p>
+  <p class="mb-4 flex-1 text-base text-text-body">{description}</p>
   <div class="mb-3 font-semibold text-bark">от {price.toLocaleString('ru-RU')} ₽</div>
   <button
     type="button"

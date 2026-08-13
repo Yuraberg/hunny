@@ -26,27 +26,27 @@
 
         <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label for="fName" class="mb-1 block text-sm text-text-body/80">Ваше имя</label>
+            <label for="fName" class="mb-1 block text-base text-text-body/80">Ваше имя</label>
             <input id="fName" name="name" type="text" placeholder="Как вас зовут?" autocomplete="name" required
               class="w-full rounded-lg border border-cream-dark px-3 py-2.5 focus:border-honey-gold focus:outline-none" />
           </div>
           <div>
-            <label for="fPhone" class="mb-1 block text-sm text-text-body/80">Телефон</label>
+            <label for="fPhone" class="mb-1 block text-base text-text-body/80">Телефон</label>
             <input id="fPhone" name="phone" type="tel" placeholder="+7 (___) ___-__-__" autocomplete="tel" required
               class="w-full rounded-lg border border-cream-dark px-3 py-2.5 focus:border-honey-gold focus:outline-none" />
           </div>
         </div>
 
-        <div id="orderSummary" class="mb-4 rounded-lg bg-cream/60 p-4 text-sm"></div>
+        <div id="orderSummary" class="mb-4 rounded-lg bg-cream/60 p-4 text-base"></div>
 
         <fieldset class="mb-4">
-          <legend class="mb-1 block text-sm text-text-body/80">Способ доставки</legend>
+          <legend class="mb-1 block text-base text-text-body/80">Способ доставки</legend>
           <div class="flex flex-col gap-2 sm:flex-row">
-            <label class="flex flex-1 items-center gap-2 rounded-lg border border-cream-dark px-3 py-2.5 text-sm">
+            <label class="flex flex-1 items-center gap-2 rounded-lg border border-cream-dark px-3 py-2.5 text-base">
               <input type="radio" name="deliveryType" value="address" checked class="h-4 w-4 shrink-0" />
               Курьером / почтой
             </label>
-            <label class="flex flex-1 items-center gap-2 rounded-lg border border-cream-dark px-3 py-2.5 text-sm">
+            <label class="flex flex-1 items-center gap-2 rounded-lg border border-cream-dark px-3 py-2.5 text-base">
               <input type="radio" name="deliveryType" value="pickup" class="h-4 w-4 shrink-0" />
               В пункт выдачи
             </label>
@@ -54,31 +54,31 @@
         </fieldset>
 
         <div id="addressBlock" class="mb-4">
-          <label for="fAddress" class="mb-1 block text-sm text-text-body/80">Адрес доставки</label>
+          <label for="fAddress" class="mb-1 block text-base text-text-body/80">Адрес доставки</label>
           <input id="fAddress" name="address" type="text" placeholder="Город, улица, дом" autocomplete="street-address"
             class="w-full rounded-lg border border-cream-dark px-3 py-2.5 focus:border-honey-gold focus:outline-none" />
         </div>
 
         <div id="pickupBlock" class="mb-4 hidden">
-          <label for="fPickupAddress" class="mb-1 block text-sm text-text-body/80">Пункт выдачи</label>
+          <label for="fPickupAddress" class="mb-1 block text-base text-text-body/80">Пункт выдачи</label>
           <div id="ya-delivery-widget" class="mb-2 empty:hidden"></div>
           <input id="fPickupAddress" name="pickupAddress" type="text"
             placeholder="Укажите ближайший пункт выдачи (сеть, город, адрес)"
             class="w-full rounded-lg border border-cream-dark px-3 py-2.5 focus:border-honey-gold focus:outline-none" />
-          <p class="mt-1 text-xs text-text-body/60">
+          <p class="mt-1 text-sm text-text-body/60">
             Карта пунктов выдачи скоро появится здесь — пока укажите пункт словами, мы уточним детали при подтверждении.
           </p>
-          <p id="deliveryEstimate" class="mt-1 text-sm text-forest-dark empty:hidden"></p>
+          <p id="deliveryEstimate" class="mt-1 text-base text-forest-dark empty:hidden"></p>
         </div>
 
         <fieldset class="mb-4">
-          <legend class="mb-1 block text-sm text-text-body/80">Способ оплаты</legend>
+          <legend class="mb-1 block text-base text-text-body/80">Способ оплаты</legend>
           <div class="flex flex-col gap-2 sm:flex-row">
-            <label class="flex flex-1 items-center gap-2 rounded-lg border border-cream-dark px-3 py-2.5 text-sm">
+            <label class="flex flex-1 items-center gap-2 rounded-lg border border-cream-dark px-3 py-2.5 text-base">
               <input type="radio" name="paymentMethod" value="cod" checked class="h-4 w-4 shrink-0" />
               При получении
             </label>
-            <label class="flex flex-1 items-center gap-2 rounded-lg border border-cream-dark px-3 py-2.5 text-sm">
+            <label class="flex flex-1 items-center gap-2 rounded-lg border border-cream-dark px-3 py-2.5 text-base">
               <input type="radio" name="paymentMethod" value="online" class="h-4 w-4 shrink-0" />
               Онлайн (карта, СБП)
             </label>
@@ -86,7 +86,7 @@
         </fieldset>
 
         <div class="mb-4">
-          <label for="fComment" class="mb-1 block text-sm text-text-body/80">Комментарий к заказу</label>
+          <label for="fComment" class="mb-1 block text-base text-text-body/80">Комментарий к заказу</label>
           <textarea id="fComment" name="comment" placeholder="Количество, особые пожелания, вопросы..." rows="3"
             class="w-full resize-y rounded-lg border border-cream-dark px-3 py-2.5 focus:border-honey-gold focus:outline-none"></textarea>
         </div>
@@ -98,7 +98,7 @@
 
         <div class="mb-5 flex items-start gap-2">
           <input id="fConsent" name="consent" type="checkbox" required class="mt-1 h-4 w-4 shrink-0" />
-          <label for="fConsent" class="text-sm text-text-body/80">
+          <label for="fConsent" class="text-base text-text-body/80">
             Я согласен(-на) на обработку персональных данных и принимаю
             <a href="/privacy" target="_blank" rel="noopener" class="text-honey-amber hover:underline">политику конфиденциальности</a>
           </label>
@@ -218,7 +218,7 @@
         const { price, percent, freeUnits } = linePricing(p.price, item.qty);
         const badge = percent > 0 ? ` <span class="text-forest-dark">(−${percent}%)</span>` : '';
         const freeNote =
-          freeUnits > 0 ? `<div class="text-xs text-forest-dark">+${freeUnits} ${pluralJars(freeUnits)} в подарок</div>` : '';
+          freeUnits > 0 ? `<div class="text-sm text-forest-dark">+${freeUnits} ${pluralJars(freeUnits)} в подарок</div>` : '';
         return `<li class="py-1"><div class="flex justify-between"><span>${escapeHtml(p.name)} × ${item.qty}${badge}</span><span>${price.toLocaleString('ru-RU')} ₽</span></div>${freeNote}</li>`;
       })
       .join('');
@@ -246,14 +246,14 @@
       </div>
       ${
         !freeShipping
-          ? `<p class="mt-2 text-xs text-text-body/60">Ещё ${(FREE_SHIPPING_THRESHOLD - total).toLocaleString('ru-RU')} ₽ до бесплатной доставки</p>`
+          ? `<p class="mt-2 text-sm text-text-body/60">Ещё ${(FREE_SHIPPING_THRESHOLD - total).toLocaleString('ru-RU')} ₽ до бесплатной доставки</p>`
           : ''
       }
     `;
   }
 
   function showStatus(type: 'ok' | 'err', html: string) {
-    statusEl.className = `mt-4 rounded-lg p-3 text-sm ${type === 'ok' ? 'bg-forest/10 text-forest-dark' : 'bg-red-100 text-red-800'}`;
+    statusEl.className = `mt-4 rounded-lg p-3 text-base ${type === 'ok' ? 'bg-forest/10 text-forest-dark' : 'bg-red-100 text-red-800'}`;
     statusEl.innerHTML = html;
   }
 
