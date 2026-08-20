@@ -21,6 +21,12 @@ const canonical = new URL(Astro.url.pathname, siteUrl).toString();
 const ogImage = new URL(image ?? '/img/logo-badge.webp', siteUrl).toString();
 
 const products = await getCollection('products', (p) => import.meta.env.DEV || !p.data.draft);
+
+// Счётчик и подтверждение прав задаются секретами на этапе сборки (deploy.yml) —
+// до их заполнения просто не рендерятся, сборка не ломается.
+const yandexMetrikaId = import.meta.env.YANDEX_METRIKA_ID;
+const googleSiteVerification = import.meta.env.GOOGLE_SITE_VERIFICATION;
+const yandexSiteVerification = import.meta.env.YANDEX_SITE_VERIFICATION;
 const productsData = products.map((p) => ({ id: p.id, name: p.data.name, price: p.data.price }));
 
 // Организация и сайт — общие для всех страниц, помогают Яндексу и Google
@@ -70,6 +76,9 @@ const businessSchema = {
   <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow'} />
   <link rel="canonical" href={canonical} />
 
+  {googleSiteVerification && <meta name="google-site-verification" content={googleSiteVerification} />}
+  {yandexSiteVerification && <meta name="yandex-verification" content={yandexSiteVerification} />}
+
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Медовая Слобода" />
   <meta property="og:title" content={title} />
@@ -88,6 +97,26 @@ const businessSchema = {
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2 L28 9 L28 23 L16 30 L4 23 L4 9 Z' fill='%23C8922A'/%3E%3Cpath d='M16 7 L23.5 11.5 L23.5 20.5 L16 25 L8.5 20.5 L8.5 11.5 Z' fill='%233D2B1A'/%3E%3C/svg%3E" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+  {yandexMetrikaId && (
+    <script define:vars={{ metrikaId: Number(yandexMetrikaId) }}>
+      (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+      m[i].l=1*new Date();
+      for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+      k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+      (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+      ym(metrikaId, "init", {
+        clickmap: true,
+        trackLinks: true,
+        accurateTrackBounce: true,
+        webvisor: true
+      });
+    </script>
+    <noscript>
+      <div><img src={`https://mc.yandex.ru/watch/${yandexMetrikaId}`} style="position:absolute; left:-9999px;" alt="" /></div>
+    </noscript>
+  )}
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Alegreya:ital,wght@0,400;0,500;0,700;1,400&family=Alegreya+SC:wght@400;700&family=Ruslan+Display&display=swap" rel="stylesheet" />
 </head>
 <body>

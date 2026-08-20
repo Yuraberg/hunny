@@ -19,7 +19,12 @@ jobs:
 
       - run: npm run generate:products
 
-      - run: npm run build
+      - name: Build
+        env:
+          YANDEX_METRIKA_ID: ${{ secrets.YANDEX_METRIKA_ID }}
+          GOOGLE_SITE_VERIFICATION: ${{ secrets.GOOGLE_SITE_VERIFICATION }}
+          YANDEX_SITE_VERIFICATION: ${{ secrets.YANDEX_SITE_VERIFICATION }}
+        run: npm run build
 
       - name: Собрать бандл для деплоя (site/ + api/)
         run: |

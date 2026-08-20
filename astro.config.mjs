@@ -16,7 +16,7 @@ export default defineConfig({
     sitemap({
       filter: (page) => {
         const path = new URL(page).pathname.replace(/\/$/, '');
-        return !stubPaths.has(path);
+        return !stubPaths.has(path) && !path.startsWith('/order');
       },
     }),
   ],
