@@ -1,6 +1,8 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import WorldOfBees from '../components/explorer/WorldOfBees.astro';
+import CompareGrid from '../components/explorer/CompareGrid.astro';
+import { hiveTypes, beeCastes } from '../data/comparisons';
 ---
 
 <BaseLayout
@@ -18,6 +20,20 @@ import WorldOfBees from '../components/explorer/WorldOfBees.astro';
     </div>
 
     <WorldOfBees />
+
+    <CompareGrid
+      title="Какой улей выбрать"
+      subtitle="Четыре основные конструкции — у каждой свой характер работы"
+      items={hiveTypes}
+      kind="hive"
+    />
+
+    <CompareGrid
+      title="Кто есть кто в пчелиной семье"
+      subtitle="Матка, рабочая пчела и трутень — три касты, три разные роли"
+      items={beeCastes}
+      kind="caste"
+    />
 
     <p class="reveal mx-auto mt-14 max-w-xl text-center text-text-body/70">
       Это лишь малая часть — в <a href="/wiki" class="text-honey-amber hover:underline">медовой энциклопедии</a> уже больше 500 статей о пчёлах, породах, пчеловодстве и мёде.
