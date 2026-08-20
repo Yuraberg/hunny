@@ -1,0 +1,170 @@
+---
+import { hiveHotspots, beeHotspots, type Hotspot } from '../../data/explorers';
+import HiveCutaway from './HiveCutaway.astro';
+import BeeAnatomy from './BeeAnatomy.astro';
+
+interface ExplorerConfig {
+  id: 'hive' | 'bee';
+  tabLabel: string;
+  aspect: string;
+  hotspots: Hotspot[];
+}
+
+const explorers: ExplorerConfig[] = [
+  { id: 'hive', tabLabel: 'Улей в разрезе', aspect: '400 / 460', hotspots: hiveHotspots },
+  { id: 'bee', tabLabel: 'Анатомия пчелы', aspect: '520 / 260', hotspots: beeHotspots },
+];
+---
+
+<div class="mx-auto max-w-5xl">
+  <div class="reveal mb-8 flex justify-center gap-3">
+    {explorers.map((exp, i) => (
+      <button
+        type="button"
+        class:list={[
+          'explorer-tab font-label rounded-full border px-5 py-2 text-sm tracking-wide transition-colors',
+          i === 0 ? 'is-active border-honey-amber bg-honey-amber text-warm-white' : 'border-kraft-dark/50 bg-warm-white text-bark hover:border-honey-amber',
+        ]}
+        data-target={exp.id}
+      >
+        {exp.tabLabel}
+      </button>
+    ))}
+  </div>
+
+  {explorers.map((exp, i) => (
+    <div class:list={['explorer reveal grid gap-8 md:grid-cols-[1.15fr_1fr]', i !== 0 && 'hidden']} data-explorer={exp.id}>
+      <div class="relative w-full rounded-2xl bg-warm-white shadow-[0_4px_20px_var(--shadow)]" style={`aspect-ratio:${exp.aspect}`}>
+        <div class="absolute inset-4">
+          {exp.id === 'hive' ? <HiveCutaway /> : <BeeAnatomy />}
+          {exp.hotspots.map((h) => (
+            <button
+              type="button"
+              class="explorer-trigger hotspot-dot absolute -m-3 -translate-x-1/2 -translate-y-1/2 p-3"
+              style={`left:${h.x}%; top:${h.y}%`}
+              data-label={h.label}
+              data-slug={h.slug}
+              data-tip={h.didYouKnow}
+              data-facts={JSON.stringify(h.facts)}
+              aria-label={h.label}
+            >
+              <span class="hotspot-visual block h-4 w-4 rounded-full"></span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div class="explorer-panel flex flex-col rounded-2xl bg-cream p-6">
+        <span class="font-label mb-2 inline-block text-xs tracking-widest text-honey-amber uppercase">Выбрано</span>
+        <h3 class="explorer-panel-title font-display mb-4 text-2xl text-bark">&nbsp;</h3>
+        <ul class="mb-5 flex flex-col gap-2.5">
+          <li class="flex gap-2 text-text-body"><span class="mt-1 text-honey-gold">◆</span><span class="explorer-panel-fact"></span></li>
+          <li class="flex gap-2 text-text-body"><span class="mt-1 text-honey-gold">◆</span><span class="explorer-panel-fact"></span></li>
+          <li class="flex gap-2 text-text-body"><span class="mt-1 text-honey-gold">◆</span><span class="explorer-panel-fact"></span></li>
+        </ul>
+        <blockquote class="mb-5 border-l-2 border-honey-gold pl-4 font-accent text-honey-amber italic">
+          <span class="font-label text-bark not-italic">Интересный факт: </span>
+          <span class="explorer-panel-tip"></span>
+        </blockquote>
+        <a class="explorer-panel-link font-label mt-auto inline-flex items-center gap-1 text-honey-amber hover:underline" href="/wiki">
+          Подробнее в энциклопедии →
+        </a>
+
+        <div class="mt-6 flex flex-wrap gap-2 border-t border-kraft-dark/30 pt-5">
+          {exp.hotspots.map((h) => (
+            <button
+              type="button"
+              class="explorer-trigger font-label rounded-full bg-warm-white px-3 py-1.5 text-xs text-bark shadow-sm transition-colors hover:text-honey-amber"
+              data-label={h.label}
+              data-slug={h.slug}
+              data-tip={h.didYouKnow}
+              data-facts={JSON.stringify(h.facts)}
+            >
+              {h.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
+
+<style>
+  .hotspot-visual {
+    background: var(--color-honey-gold);
+    border: 2px solid var(--color-warm-white);
+    box-shadow: 0 0 0 2px var(--color-honey-amber), 0 2px 8px var(--shadow-deep);
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+  .hotspot-dot::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 16px;
+    height: 16px;
+    border-radius: 9999px;
+    background: var(--color-honey-gold);
+    opacity: 0.5;
+    animation: hotspot-ping 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+    pointer-events: none;
+  }
+  .hotspot-dot.is-active .hotspot-visual {
+    background: var(--color-forest);
+    transform: scale(1.25);
+  }
+  .hotspot-dot.is-active::after {
+    background: var(--color-forest);
+  }
+  @keyframes hotspot-ping {
+    0% { transform: scale(1); opacity: 0.55; }
+    75%, 100% { transform: scale(2.2); opacity: 0; }
+  }
+
+  .explorer-trigger.is-active {
+    color: var(--color-warm-white);
+    background: var(--color-honey-amber);
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.explorer').forEach((explorer) => {
+    const triggers = explorer.querySelectorAll<HTMLButtonElement>('.explorer-trigger');
+    const panel = explorer.querySelector('.explorer-panel');
+    const titleEl = panel?.querySelector<HTMLElement>('.explorer-panel-title');
+    const factEls = panel?.querySelectorAll<HTMLElement>('.explorer-panel-fact');
+    const tipEl = panel?.querySelector<HTMLElement>('.explorer-panel-tip');
+    const linkEl = panel?.querySelector<HTMLAnchorElement>('.explorer-panel-link');
+
+    const activate = (btn: HTMLButtonElement) => {
+      const slug = btn.dataset.slug ?? '';
+      triggers.forEach((t) => t.classList.toggle('is-active', t.dataset.slug === slug));
+      if (titleEl) titleEl.textContent = btn.dataset.label ?? '';
+      const facts: string[] = JSON.parse(btn.dataset.facts ?? '[]');
+      factEls?.forEach((el, i) => { el.textContent = facts[i] ?? ''; });
+      if (tipEl) tipEl.textContent = btn.dataset.tip ?? '';
+      if (linkEl) linkEl.href = `/wiki/${slug}`;
+    };
+
+    triggers.forEach((btn) => btn.addEventListener('click', () => activate(btn)));
+    if (triggers[0]) activate(triggers[0]);
+  });
+
+  const tabs = document.querySelectorAll<HTMLButtonElement>('.explorer-tab');
+  const panels = document.querySelectorAll<HTMLElement>('.explorer');
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      tabs.forEach((t) => {
+        const active = t === tab;
+        t.classList.toggle('is-active', active);
+        t.classList.toggle('border-honey-amber', active);
+        t.classList.toggle('bg-honey-amber', active);
+        t.classList.toggle('text-warm-white', active);
+        t.classList.toggle('border-kraft-dark/50', !active);
+        t.classList.toggle('bg-warm-white', !active);
+        t.classList.toggle('text-bark', !active);
+      });
+      panels.forEach((p) => p.classList.toggle('hidden', p.dataset.explorer !== tab.dataset.target));
+    });
+  });
+</script>

@@ -1,0 +1,48 @@
+{/* Схематичный разрез рамочного улья: крыша → утепление → медовый корпус → гнездо с расплодом и маткой → дно с летком. */}
+<svg viewBox="0 0 400 460" class="absolute inset-0 h-full w-full" role="img" aria-label="Схема улья в разрезе">
+  <defs>
+    <pattern id="cellsLight" width="14" height="14" patternUnits="userSpaceOnUse">
+      <circle cx="7" cy="7" r="1.6" fill="var(--color-honey-gold)" opacity="0.5" />
+    </pattern>
+    <pattern id="cellsDark" width="14" height="14" patternUnits="userSpaceOnUse">
+      <circle cx="7" cy="7" r="1.6" fill="var(--color-bark-light)" opacity="0.35" />
+    </pattern>
+  </defs>
+
+  <!-- ножки -->
+  <rect x="60" y="415" width="16" height="25" rx="2" fill="var(--color-bark-light)" />
+  <rect x="324" y="415" width="16" height="25" rx="2" fill="var(--color-bark-light)" />
+
+  <!-- дно и леток -->
+  <rect x="20" y="390" width="360" height="25" rx="3" fill="var(--color-kraft)" stroke="var(--color-bark)" stroke-width="3" />
+  <rect x="165" y="392" width="70" height="11" rx="2" fill="var(--color-bark)" />
+
+  <!-- гнездовой корпус: расплод и матка -->
+  <rect x="30" y="180" width="340" height="210" fill="url(#cellsDark)" stroke="var(--color-bark)" stroke-width="3" />
+  <line x1="100" y1="180" x2="100" y2="390" stroke="var(--color-bark)" stroke-width="1.5" opacity="0.5" />
+  <line x1="170" y1="180" x2="170" y2="390" stroke="var(--color-bark)" stroke-width="1.5" opacity="0.5" />
+  <line x1="240" y1="180" x2="240" y2="390" stroke="var(--color-bark)" stroke-width="1.5" opacity="0.5" />
+  <rect x="268" y="196" width="86" height="178" rx="2" fill="none" stroke="var(--color-honey-gold)" stroke-width="3" />
+  <ellipse cx="240" cy="330" rx="10" ry="13" fill="var(--color-honey-gold)" stroke="var(--color-bark)" stroke-width="2" />
+  <path d="M232 320 L240 312 L248 320 Z" fill="var(--color-honey-gold)" stroke="var(--color-bark)" stroke-width="1.5" />
+  <circle cx="132" cy="280" r="4" fill="var(--color-bark)" opacity="0.5" />
+  <circle cx="148" cy="292" r="4" fill="var(--color-bark)" opacity="0.5" />
+  <circle cx="140" cy="304" r="4" fill="var(--color-bark)" opacity="0.5" />
+  <circle cx="156" cy="278" r="4" fill="var(--color-bark)" opacity="0.5" />
+
+  <!-- медовый корпус -->
+  <rect x="40" y="60" width="320" height="110" fill="url(#cellsLight)" stroke="var(--color-bark)" stroke-width="3" />
+  <line x1="104" y1="60" x2="104" y2="170" stroke="var(--color-bark)" stroke-width="1.5" opacity="0.5" />
+  <line x1="168" y1="60" x2="168" y2="170" stroke="var(--color-bark)" stroke-width="1.5" opacity="0.5" />
+  <line x1="232" y1="60" x2="232" y2="170" stroke="var(--color-bark)" stroke-width="1.5" opacity="0.5" />
+  <line x1="296" y1="60" x2="296" y2="170" stroke="var(--color-bark)" stroke-width="1.5" opacity="0.5" />
+
+  <!-- вентиляция -->
+  <circle cx="345" cy="80" r="4" fill="var(--color-bark)" />
+  <circle cx="345" cy="95" r="4" fill="var(--color-bark)" />
+  <path d="M355 70 Q375 80 355 92" fill="none" stroke="var(--color-honey-amber)" stroke-width="2" opacity="0.6" />
+
+  <!-- утепление и крыша -->
+  <rect x="40" y="45" width="320" height="12" fill="var(--color-cream-dark)" stroke="var(--color-bark)" stroke-width="2" stroke-dasharray="6 4" />
+  <polygon points="28,50 200,4 372,50" fill="var(--color-kraft-dark)" stroke="var(--color-bark)" stroke-width="3" stroke-linejoin="round" />
+</svg>

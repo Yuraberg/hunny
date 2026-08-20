@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import WorldOfBees from '../components/explorer/WorldOfBees.astro';
+---
+
+<BaseLayout
+  title="Мир пчёл — устройство улья и анатомия пчелы — Медовая Слобода"
+  description="Интерактивная схема: устройство улья в разрезе и анатомия медоносной пчелы. Кликните на деталь, чтобы узнать факты и почитать статью в медовой энциклопедии."
+>
+  <section class="texture-paper px-5 py-24 md:py-28">
+    <div class="mx-auto max-w-3xl text-center">
+      <div class="title-ornate reveal">
+        <h1 class="font-display text-3xl font-normal text-bark">Мир пчёл</h1>
+      </div>
+      <p class="font-accent reveal mb-14 text-lg text-honey-amber italic">
+        Устройство улья и анатомия пчелы — кликните на деталь, чтобы узнать больше
+      </p>
+    </div>
+
+    <WorldOfBees />
+
+    <p class="reveal mx-auto mt-14 max-w-xl text-center text-text-body/70">
+      Это лишь малая часть — в <a href="/wiki" class="text-honey-amber hover:underline">медовой энциклопедии</a> уже больше 500 статей о пчёлах, породах, пчеловодстве и мёде.
+    </p>
+  </section>
+</BaseLayout>
