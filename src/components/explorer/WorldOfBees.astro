@@ -34,7 +34,7 @@ const explorers: ExplorerConfig[] = [
 
   {explorers.map((exp, i) => (
     <div class:list={['explorer reveal grid gap-8 md:grid-cols-[1.15fr_1fr]', i !== 0 && 'hidden']} data-explorer={exp.id}>
-      <div class="relative w-full rounded-2xl bg-warm-white shadow-[0_4px_20px_var(--shadow)]" style={`aspect-ratio:${exp.aspect}`}>
+      <div class="relative w-full min-w-0 rounded-2xl bg-warm-white shadow-[0_4px_20px_var(--shadow)]" style={`aspect-ratio:${exp.aspect}`}>
         <div class="absolute inset-4">
           {exp.id === 'hive' ? <HiveCutaway /> : <BeeAnatomy />}
           {exp.hotspots.map((h) => (
