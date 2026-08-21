@@ -43,7 +43,7 @@ const articleSchema = {
 };
 ---
 
-<BaseLayout title={`${title} — Медовая Слобода`} description={excerpt} image={heroImage.src}>
+<BaseLayout title={`${title} — Медовая Слобода`} description={excerpt} image={heroImage.src} ogType="article">
   <script slot="structured-data" is:inline type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
   <article class="texture-paper px-5 py-24 md:py-28">
     <div class="mx-auto max-w-2xl">

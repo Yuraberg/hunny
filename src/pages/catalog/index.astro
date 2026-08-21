@@ -1,0 +1,56 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProductCard from '../../components/ProductCard.astro';
+
+const products = (
+  await getCollection('products', (p) => import.meta.env.DEV || !p.data.draft)
+).sort((a, b) => a.data.order - b.data.order);
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://medovayasloboda.ru';
+
+const catalogSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Главная', item: `${siteUrl}/` },
+        { '@type': 'ListItem', position: 2, name: 'Каталог', item: `${siteUrl}/catalog` },
+      ],
+    },
+    {
+      '@type': 'ItemList',
+      itemListElement: products.map((product, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `${siteUrl}/catalog/${product.id}`,
+        item: { '@type': 'Product', name: `Мёд «${product.data.name}»`, url: `${siteUrl}/catalog/${product.id}` },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title="Каталог мёда — купить натуральный мёд с пасеки в Самаре"
+  description="Натуральный мёд с семейной пасеки Дмитрия Бердникова в Самарском крае: цветочный, гречишный, липовый и подарочные наборы. Цены, вес, доставка по России."
+>
+  <script slot="structured-data" is:inline type="application/ld+json" set:html={JSON.stringify(catalogSchema)} />
+  <section class="texture-paper px-5 py-24 md:py-28">
+    <div class="mx-auto max-w-6xl">
+      <a href="/" class="mb-6 inline-block text-honey-amber hover:underline">← Главная</a>
+
+      <div class="title-ornate reveal">
+        <h1 class="font-display text-3xl font-normal text-bark">Каталог мёда</h1>
+      </div>
+      <p class="font-accent reveal mb-12 text-center text-lg text-honey-amber italic">
+        Натуральный мёд с пасеки в Самарском крае — {products.length} позиций
+      </p>
+
+      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {products.map((product) => <ProductCard product={product} />)}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

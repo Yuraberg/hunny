@@ -24,6 +24,9 @@ const { name, category, slogan, description, price, imageFront, imageBack, hasFl
   <p class="text-base text-honey-amber">{category}</p>
   {slogan && <div class="font-accent my-2 text-honey-gold italic">{slogan}</div>}
   <p class="mb-4 flex-1 text-base text-text-body">{description}</p>
+  <a href={`/catalog/${product.id}`} class="mb-3 inline-block text-sm text-honey-amber hover:underline">
+    Подробнее →
+  </a>
   <div class="mb-3 font-semibold text-bark">от {price.toLocaleString('ru-RU')} ₽</div>
   <button
     type="button"

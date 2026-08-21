@@ -13,9 +13,10 @@ interface Props {
   description: string;
   image?: string;
   noindex?: boolean;
+  ogType?: 'website' | 'article' | 'product';
 }
 
-const { title, description, image, noindex = false } = Astro.props;
+const { title, description, image, noindex = false, ogType = 'website' } = Astro.props;
 const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://medovayasloboda.ru';
 const canonical = new URL(Astro.url.pathname, siteUrl).toString();
 const ogImage = new URL(image ?? '/img/logo-badge.webp', siteUrl).toString();
@@ -79,7 +80,7 @@ const businessSchema = {
   {googleSiteVerification && <meta name="google-site-verification" content={googleSiteVerification} />}
   {yandexSiteVerification && <meta name="yandex-verification" content={yandexSiteVerification} />}
 
-  <meta property="og:type" content="website" />
+  <meta property="og:type" content={ogType} />
   <meta property="og:site_name" content="Медовая Слобода" />
   <meta property="og:title" content={title} />
   <meta property="og:description" content={description} />

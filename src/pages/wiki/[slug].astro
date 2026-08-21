@@ -62,7 +62,7 @@ const articleSchema = kind === 'article' && {
 };
 ---
 
-<BaseLayout title={`${title} — Медовая энциклопедия`} description={description} noindex={kind !== 'article'}>
+<BaseLayout title={`${title} — Медовая энциклопедия`} description={description} noindex={kind !== 'article'} ogType={kind === 'article' ? 'article' : 'website'}>
   {articleSchema && (
     <script slot="structured-data" is:inline type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
   )}

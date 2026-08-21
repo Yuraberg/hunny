@@ -1,0 +1,116 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import JarFlip from '../../components/JarFlip.astro';
+import ProductCard from '../../components/ProductCard.astro';
+
+export async function getStaticPaths() {
+  const products = await getCollection('products', (p) => import.meta.env.DEV || !p.data.draft);
+  return products.map((product) => ({ params: { slug: product.id }, props: { product, allProducts: products } }));
+}
+
+const { product, allProducts } = Astro.props;
+const { name, category, slogan, description, price, weight, weightGrams, imageFront, imageBack, hasFlip, inStock } =
+  product.data;
+const { Content } = await render(product);
+
+const others = allProducts
+  .filter((p) => p.id !== product.id)
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://medovayasloboda.ru';
+const pageUrl = `${siteUrl}${Astro.url.pathname}`;
+const imageUrl = new URL(imageFront.src, siteUrl).toString();
+
+const productSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Product',
+      name: `Мёд «${name}»`,
+      description,
+      image: imageBack ? [imageUrl, new URL(imageBack.src, siteUrl).toString()] : [imageUrl],
+      sku: product.id,
+      category,
+      url: pageUrl,
+      weight: { '@type': 'QuantitativeValue', value: weightGrams, unitCode: 'GRM' },
+      brand: { '@type': 'Brand', name: 'Медовая Слобода' },
+      offers: {
+        '@type': 'Offer',
+        price,
+        priceCurrency: 'RUB',
+        url: pageUrl,
+        availability: inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+        seller: { '@id': `${siteUrl}/#business` },
+      },
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Главная', item: `${siteUrl}/` },
+        { '@type': 'ListItem', position: 2, name: 'Каталог', item: `${siteUrl}/catalog` },
+        { '@type': 'ListItem', position: 3, name, item: pageUrl },
+      ],
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title={`Мёд «${name}» — купить с доставкой | Медовая Слобода`}
+  description={description}
+  image={imageFront.src}
+  ogType="product"
+>
+  <script slot="structured-data" is:inline type="application/ld+json" set:html={JSON.stringify(productSchema)} />
+  <article class="texture-paper px-5 py-24 md:py-28">
+    <div class="mx-auto max-w-4xl">
+      <a href="/catalog" class="mb-6 inline-block text-honey-amber hover:underline">← Каталог</a>
+
+      <div class="grid grid-cols-1 gap-10 md:grid-cols-2 md:items-start">
+        <div class="mx-auto w-full max-w-sm">
+          {hasFlip ? (
+            <JarFlip name={name} category={category} imageFront={imageFront} imageBack={imageBack} size="catalog" priority />
+          ) : (
+            <div class="arch-frame relative aspect-[4/5] w-full">
+              <img src={imageFront.src} alt={`${name} — ${category}`} class="h-full w-full object-cover" loading="eager" fetchpriority="high" />
+            </div>
+          )}
+        </div>
+
+        <div>
+          <p class="text-base text-honey-amber">{category}</p>
+          <h1 class="font-display mb-2 text-3xl text-bark">{name}</h1>
+          {slogan && <p class="font-accent mb-4 text-lg text-honey-gold italic">{slogan}</p>}
+          <p class="mb-6 text-base text-text-body">{description}</p>
+
+          <div class="mb-1 text-2xl font-semibold text-bark">{price.toLocaleString('ru-RU')} ₽</div>
+          {weight && <p class="mb-6 text-sm text-text-body/60">{weight}</p>}
+
+          <button
+            type="button"
+            class="add-to-cart-btn font-label w-full rounded-full bg-bark px-6 py-4 text-cream shadow-[0_4px_0_var(--color-bark-medium)] transition-transform hover:-translate-y-0.5 disabled:opacity-50 sm:w-auto"
+            data-product-id={product.id}
+            disabled={!inStock}
+          >
+            {inStock ? 'В корзину' : 'Нет в наличии'}
+          </button>
+        </div>
+      </div>
+
+      <div class="story-content mx-auto mt-14 max-w-2xl text-text-body">
+        <Content />
+      </div>
+
+      {others.length > 0 && (
+        <div class="mt-20">
+          <h2 class="font-label mb-6 border-b border-kraft-dark/40 pb-2 text-xl text-bark">Другие товары</h2>
+          <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {others.map((p) => <ProductCard product={p} />)}
+          </div>
+        </div>
+      )}
+    </div>
+  </article>
+</BaseLayout>
