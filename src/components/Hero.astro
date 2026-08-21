@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-import JarFlip from './JarFlip.astro';
+import { Image } from 'astro:assets';
 
 const featured = (await getCollection('products', (p) => p.data.featured && !p.data.draft)).sort(
   (a, b) => a.data.order - b.data.order
@@ -23,14 +23,16 @@ const featured = (await getCollection('products', (p) => p.data.featured && !p.d
     <div class="mb-10 flex items-end justify-center gap-4">
       {featured.map((product, i) => (
         <div class={i === 1 ? 'relative z-10 scale-110' : ''}>
-          <JarFlip
-            name={product.data.name}
-            category={product.data.category}
-            imageFront={product.data.imageFront}
-            imageBack={product.data.imageBack}
-            size="hero"
-            priority
-          />
+          <div class="arch-frame relative w-[150px] h-[190px] sm:w-[190px] sm:h-[230px]">
+            <Image
+              src={product.data.imageFront}
+              alt={`Банка мёда «${product.data.name}» — ${product.data.category}`}
+              width={400}
+              height={480}
+              loading="eager"
+              fetchpriority="high"
+            />
+          </div>
         </div>
       ))}
     </div>

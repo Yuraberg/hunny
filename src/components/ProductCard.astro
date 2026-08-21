@@ -1,33 +1,28 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import { Image } from 'astro:assets';
-import JarFlip from './JarFlip.astro';
 
 interface Props {
   product: CollectionEntry<'products'>;
 }
 
 const { product } = Astro.props;
-const { name, category, slogan, description, price, imageFront, imageBack, hasFlip, inStock } = product.data;
+const { name, category, slogan, description, price, imageFront, inStock } = product.data;
 ---
 
 <div class="product-card reveal flex flex-col rounded-2xl bg-warm-white p-5 shadow-[0_4px_16px_var(--shadow)]">
   <div class="mx-auto mb-4 w-[70%]">
-    {hasFlip ? (
-      <JarFlip name={name} category={category} imageFront={imageFront} imageBack={imageBack} size="catalog" />
-    ) : (
-      <div class="arch-frame relative aspect-[4/5] w-full">
-        <Image
-          src={imageFront}
-          alt={`${name} — ${category}`}
-          width={400}
-          height={480}
-          loading="lazy"
-          decoding="async"
-          class="h-full w-full object-cover"
-        />
-      </div>
-    )}
+    <div class="arch-frame relative aspect-[4/5] w-full">
+      <Image
+        src={imageFront}
+        alt={`${name} — ${category}`}
+        width={400}
+        height={480}
+        loading="lazy"
+        decoding="async"
+        class="h-full w-full object-cover"
+      />
+    </div>
   </div>
   <h3 class="font-label text-xl text-bark">{name}</h3>
   <p class="text-base text-honey-amber">{category}</p>
