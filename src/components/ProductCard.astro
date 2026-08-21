@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
 import JarFlip from './JarFlip.astro';
 
 interface Props {
@@ -16,7 +17,15 @@ const { name, category, slogan, description, price, imageFront, imageBack, hasFl
       <JarFlip name={name} category={category} imageFront={imageFront} imageBack={imageBack} size="catalog" />
     ) : (
       <div class="arch-frame relative aspect-[4/5] w-full">
-        <img src={imageFront.src} alt={`${name} — ${category}`} class="h-full w-full object-cover" loading="lazy" />
+        <Image
+          src={imageFront}
+          alt={`${name} — ${category}`}
+          width={400}
+          height={480}
+          loading="lazy"
+          decoding="async"
+          class="h-full w-full object-cover"
+        />
       </div>
     )}
   </div>
