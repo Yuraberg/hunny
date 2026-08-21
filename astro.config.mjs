@@ -3,23 +3,20 @@ import { defineConfig } from 'astro/config';
 
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
-import wikiStubs from './src/content/wiki-stubs.json' with { type: 'json' };
-
-// Страницы-заглушки энциклопедии ("статья скоро появится") — тонкий дублирующийся
-// контент, который не должен попадать в индекс поисковиков.
-const stubPaths = new Set(Object.keys(wikiStubs).map((slug) => `/wiki/${slug}`));
+import { unified } from '@astrojs/markdown-remark';
+import rehypeUnstubWikiLinks from './src/lib/rehype-unstub-wiki-links.ts';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://medovayasloboda.ru',
   integrations: [
     sitemap({
-      filter: (page) => {
-        const path = new URL(page).pathname.replace(/\/$/, '');
-        return !stubPaths.has(path) && !path.startsWith('/order');
-      },
+      filter: (page) => !new URL(page).pathname.replace(/\/$/, '').startsWith('/order'),
     }),
   ],
+  markdown: {
+    processor: unified({ rehypePlugins: [rehypeUnstubWikiLinks] }),
+  },
   vite: {
     plugins: [tailwindcss()],
     server: {
