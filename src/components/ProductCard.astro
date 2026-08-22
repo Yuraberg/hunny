@@ -11,7 +11,7 @@ const { name, category, slogan, description, price, imageFront, inStock } = prod
 ---
 
 <div class="product-card reveal flex flex-col rounded-2xl bg-warm-white p-5 shadow-[0_4px_16px_var(--shadow)]">
-  <div class="mx-auto mb-4 w-[70%]">
+  <a href={`/catalog/${product.id}`} class="mx-auto mb-4 block w-[70%]">
     <div class="arch-frame relative aspect-[4/5] w-full">
       <Image
         src={imageFront}
@@ -23,8 +23,10 @@ const { name, category, slogan, description, price, imageFront, inStock } = prod
         class="h-full w-full object-cover"
       />
     </div>
-  </div>
-  <h3 class="font-label text-xl text-bark">{name}</h3>
+  </a>
+  <h3 class="font-label text-xl text-bark">
+    <a href={`/catalog/${product.id}`} class="hover:text-honey-amber">{name}</a>
+  </h3>
   <p class="text-base text-honey-amber">{category}</p>
   {slogan && <div class="font-accent my-2 text-honey-gold italic">{slogan}</div>}
   <p class="mb-4 flex-1 text-base text-text-body">{description}</p>
