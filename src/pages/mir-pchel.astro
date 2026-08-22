@@ -1,8 +1,11 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import WorldOfBees from '../components/explorer/WorldOfBees.astro';
 import CompareGrid from '../components/explorer/CompareGrid.astro';
 import { hiveTypes, beeCastes } from '../data/comparisons';
+import hiveMeadow from '../assets/mir-pchel/hive-meadow.jpg';
+import beeMacro from '../assets/mir-pchel/bee-macro.jpg';
 ---
 
 <BaseLayout
@@ -17,6 +20,47 @@ import { hiveTypes, beeCastes } from '../data/comparisons';
       <p class="font-accent reveal mb-14 text-lg text-honey-amber italic">
         Устройство улья и анатомия пчелы — кликните на деталь, чтобы узнать больше
       </p>
+    </div>
+
+    <div class="reveal mx-auto mb-16 grid max-w-3xl grid-cols-2 gap-4 sm:gap-6">
+      <div class="zoomable-photo arch-frame relative aspect-square" data-full={hiveMeadow.src}>
+        <Image
+          src={hiveMeadow}
+          alt="Традиционный деревянный улей на пасеке в лучах закатного солнца"
+          width={780}
+          height={768}
+          class="h-full w-full object-cover"
+          loading="lazy"
+        />
+        <button
+          type="button"
+          class="zoom-badge absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-warm-white/90 text-sm shadow"
+          aria-label="Увеличить фото улья"
+          data-full={hiveMeadow.src}
+          data-alt="Традиционный деревянный улей на пасеке"
+        >
+          🔍
+        </button>
+      </div>
+      <div class="zoomable-photo arch-frame relative aspect-square" data-full={beeMacro.src}>
+        <Image
+          src={beeMacro}
+          alt="Медоносная пчела крупным планом на деревянной рамке улья"
+          width={800}
+          height={800}
+          class="h-full w-full object-cover"
+          loading="lazy"
+        />
+        <button
+          type="button"
+          class="zoom-badge absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-warm-white/90 text-sm shadow"
+          aria-label="Увеличить фото пчелы"
+          data-full={beeMacro.src}
+          data-alt="Медоносная пчела крупным планом"
+        >
+          🔍
+        </button>
+      </div>
     </div>
 
     <WorldOfBees />
