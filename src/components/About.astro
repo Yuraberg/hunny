@@ -1,6 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import buckwheatField from '../assets/products/bogatyrskaya_back.jpg';
+import dmitryPhoto from '../assets/about/dmitry-berdnikov.jpg';
 ---
 
 <section id="about" class="texture-paper py-24">
@@ -17,14 +18,15 @@ import buckwheatField from '../assets/products/bogatyrskaya_back.jpg';
   <div class="texture-wood py-14">
     <div class="mx-auto grid max-w-4xl items-center gap-10 px-5 md:grid-cols-2">
       <div class="reveal text-center">
-        <div class="mx-auto flex h-[130px] w-[130px] items-center justify-center rounded-full border-2 border-honey-gold/50 bg-bark-light">
-          <!-- Плейсхолдер: заменить на реальное фото Дмитрия Бердникова -->
-          <svg width="72" height="72" viewBox="0 0 64 64" fill="none" stroke="#fff8ec" stroke-width="1.6" opacity="0.85">
-            <ellipse cx="32" cy="30" rx="11" ry="8" />
-            <rect x="20" y="24" width="24" height="3" fill="#fff8ec" stroke="none" />
-            <rect x="20" y="33" width="24" height="3" fill="#fff8ec" stroke="none" />
-            <circle cx="14" cy="26" r="4" />
-          </svg>
+        <div class="mx-auto h-[130px] w-[130px] overflow-hidden rounded-full border-2 border-honey-gold/50 bg-bark-light">
+          <Image
+            src={dmitryPhoto}
+            alt="Дмитрий Бердников, пасечник"
+            width={130}
+            height={130}
+            loading="lazy"
+            class="h-full w-full object-cover"
+          />
         </div>
         <p class="font-label mt-4 text-cream">Дмитрий Бердников</p>
       </div>
