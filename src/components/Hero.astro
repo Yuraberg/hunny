@@ -20,10 +20,10 @@ const featured = (await getCollection('products', (p) => p.data.featured && !p.d
       Щедрый дар самарской земли. Натуральный мёд с вольных лугов у берегов Волги — от нашей семьи для вашей.
     </p>
 
-    <div class="mb-10 flex items-end justify-center gap-4">
+    <div class="mb-10 flex items-end justify-center gap-2 sm:gap-4">
       {featured.map((product, i) => (
         <div class={i === 1 ? 'relative z-10 scale-110' : ''}>
-          <div class="arch-frame relative w-[150px] h-[190px] sm:w-[190px] sm:h-[230px]">
+          <div class="arch-frame relative aspect-[400/480] w-[26vw] max-w-[110px] sm:w-[190px] sm:max-w-none sm:h-[230px]">
             <Image
               src={product.data.imageFront}
               alt={`Банка мёда «${product.data.name}» — ${product.data.category}`}
