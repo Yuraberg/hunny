@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import buckwheatField from '../assets/products/bogatyrskaya_back.jpg';
+import hiveMeadow from '../assets/mir-pchel/hive-meadow.jpg';
 import dmitryPhoto from '../assets/about/dmitry-berdnikov.jpg';
 ---
 
@@ -30,14 +30,14 @@ import dmitryPhoto from '../assets/about/dmitry-berdnikov.jpg';
         </div>
         <p class="font-label mt-4 text-cream">Дмитрий Бердников</p>
       </div>
-      <div class="zoomable-photo relative overflow-hidden rounded-xl reveal" data-full={buckwheatField.src}>
-        <Image src={buckwheatField} alt="Гречишное поле на закате в Самарском крае" width={690} height={376} loading="lazy" />
+      <div class="zoomable-photo relative aspect-[690/376] overflow-hidden rounded-xl reveal" data-full={hiveMeadow.src}>
+        <Image src={hiveMeadow} alt="Улей на пасеке среди цветущего луга" width={900} height={900} loading="lazy" class="h-full w-full object-cover" />
         <button
           type="button"
           class="zoom-badge absolute top-3 right-3 flex h-9 w-9 items-center justify-center rounded-full bg-warm-white/90 text-sm shadow"
-          aria-label="Увеличить фото гречишного поля"
-          data-full={buckwheatField.src}
-          data-alt="Гречишное поле на закате в Самарском крае"
+          aria-label="Увеличить фото улья"
+          data-full={hiveMeadow.src}
+          data-alt="Улей на пасеке среди цветущего луга"
         >
           🔍
         </button>
