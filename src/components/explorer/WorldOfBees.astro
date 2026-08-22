@@ -1,18 +1,35 @@
 ---
+import { Image } from 'astro:assets';
 import { hiveHotspots, beeHotspots, type Hotspot } from '../../data/explorers';
-import HiveCutaway from './HiveCutaway.astro';
-import BeeAnatomy from './BeeAnatomy.astro';
+import hiveMeadow from '../../assets/mir-pchel/hive-meadow.jpg';
+import beeMacro from '../../assets/mir-pchel/bee-macro.jpg';
 
 interface ExplorerConfig {
   id: 'hive' | 'bee';
   tabLabel: string;
   aspect: string;
+  image: ImageMetadata;
+  alt: string;
   hotspots: Hotspot[];
 }
 
 const explorers: ExplorerConfig[] = [
-  { id: 'hive', tabLabel: 'Улей в разрезе', aspect: '400 / 460', hotspots: hiveHotspots },
-  { id: 'bee', tabLabel: 'Анатомия пчелы', aspect: '520 / 260', hotspots: beeHotspots },
+  {
+    id: 'hive',
+    tabLabel: 'Улей в разрезе',
+    aspect: '1 / 1',
+    image: hiveMeadow,
+    alt: 'Традиционный деревянный улей на пасеке',
+    hotspots: hiveHotspots,
+  },
+  {
+    id: 'bee',
+    tabLabel: 'Анатомия пчелы',
+    aspect: '1 / 1',
+    image: beeMacro,
+    alt: 'Медоносная пчела крупным планом',
+    hotspots: beeHotspots,
+  },
 ];
 ---
 
@@ -35,8 +52,8 @@ const explorers: ExplorerConfig[] = [
   {explorers.map((exp, i) => (
     <div class:list={['explorer reveal grid gap-8 md:grid-cols-[1.15fr_1fr]', i !== 0 && 'hidden']} data-explorer={exp.id}>
       <div class="relative w-full min-w-0 rounded-2xl bg-warm-white shadow-[0_4px_20px_var(--shadow)]" style={`aspect-ratio:${exp.aspect}`}>
-        <div class="absolute inset-4">
-          {exp.id === 'hive' ? <HiveCutaway /> : <BeeAnatomy />}
+        <div class="absolute inset-4 overflow-hidden rounded-xl">
+          <Image src={exp.image} alt={exp.alt} width={900} height={900} class="absolute inset-0 h-full w-full object-cover" loading="lazy" />
           {exp.hotspots.map((h) => (
             <button
               type="button"
