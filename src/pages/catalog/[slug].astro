@@ -74,7 +74,7 @@ const productSchema = {
           {hasFlip ? (
             <JarFlip name={name} category={category} imageFront={imageFront} imageBack={imageBack} size="catalog" priority />
           ) : (
-            <div class="arch-frame relative aspect-[4/5] w-full">
+            <div class="arch-frame zoomable-photo relative aspect-[4/5] w-full cursor-zoom-in" data-full={imageFront.src}>
               <Image
                 src={imageFront}
                 alt={`${name} — ${category}`}
@@ -84,6 +84,12 @@ const productSchema = {
                 fetchpriority="high"
                 class="h-full w-full object-cover"
               />
+              <span
+                class="absolute top-2 left-2 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-warm-white/90 text-sm shadow"
+                aria-hidden="true"
+              >
+                🔍
+              </span>
             </div>
           )}
         </div>
