@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Страница не найдена — Медовая Слобода"
+  description="Такой страницы не существует. Вернитесь на главную или в каталог мёда."
+  noindex={true}
+>
+  <div class="mx-auto flex min-h-[60vh] max-w-xl flex-col items-center justify-center px-5 py-24 text-center">
+    <p class="font-display text-6xl text-honey-amber">404</p>
+    <h1 class="font-label mt-4 mb-3 text-2xl text-bark">Страница не найдена</h1>
+    <p class="mb-8 leading-relaxed text-text-body">
+      Такой страницы не существует или она была перемещена. Проверьте адрес
+      или воспользуйтесь ссылками ниже.
+    </p>
+    <div class="flex flex-wrap justify-center gap-4">
+      <a
+        href="/"
+        class="rounded-full bg-honey-amber px-6 py-3 font-medium text-white transition hover:bg-bark"
+      >
+        На главную
+      </a>
+      <a
+        href="/catalog"
+        class="rounded-full border border-honey-amber px-6 py-3 font-medium text-honey-amber transition hover:bg-honey-amber hover:text-white"
+      >
+        В каталог мёда
+      </a>
+    </div>
+  </div>
+</BaseLayout>
