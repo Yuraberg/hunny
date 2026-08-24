@@ -39,7 +39,7 @@ const explorers: ExplorerConfig[] = [
       <button
         type="button"
         class:list={[
-          'explorer-tab font-label rounded-full border px-5 py-2 text-sm tracking-wide transition-colors',
+          'explorer-tab font-label flex min-h-11 items-center justify-center rounded-full border px-5 text-sm tracking-wide transition-colors',
           i === 0 ? 'is-active border-honey-amber bg-honey-amber text-warm-white' : 'border-kraft-dark/50 bg-warm-white text-bark hover:border-honey-amber',
         ]}
         data-target={exp.id}
@@ -57,7 +57,7 @@ const explorers: ExplorerConfig[] = [
           {exp.hotspots.map((h) => (
             <button
               type="button"
-              class="explorer-trigger hotspot-dot absolute -m-3 -translate-x-1/2 -translate-y-1/2 p-3"
+              class="explorer-trigger hotspot-dot absolute -translate-x-1/2 -translate-y-1/2 p-3.5"
               style={`left:${h.x}%; top:${h.y}%`}
               data-label={h.label}
               data-slug={h.slug}
@@ -75,9 +75,9 @@ const explorers: ExplorerConfig[] = [
         <span class="font-label mb-2 inline-block text-xs tracking-widest text-honey-amber uppercase">Выбрано</span>
         <h3 class="explorer-panel-title font-display mb-4 text-2xl text-bark">&nbsp;</h3>
         <ul class="mb-5 flex flex-col gap-2.5">
-          <li class="flex gap-2 text-text-body"><span class="mt-1 text-honey-gold">◆</span><span class="explorer-panel-fact"></span></li>
-          <li class="flex gap-2 text-text-body"><span class="mt-1 text-honey-gold">◆</span><span class="explorer-panel-fact"></span></li>
-          <li class="flex gap-2 text-text-body"><span class="mt-1 text-honey-gold">◆</span><span class="explorer-panel-fact"></span></li>
+          <li class="flex gap-2 text-text-body"><span class="mt-1 text-honey-gold" aria-hidden="true">◆</span><span class="explorer-panel-fact"></span></li>
+          <li class="flex gap-2 text-text-body"><span class="mt-1 text-honey-gold" aria-hidden="true">◆</span><span class="explorer-panel-fact"></span></li>
+          <li class="flex gap-2 text-text-body"><span class="mt-1 text-honey-gold" aria-hidden="true">◆</span><span class="explorer-panel-fact"></span></li>
         </ul>
         <blockquote class="mb-5 border-l-2 border-honey-gold pl-4 font-accent text-honey-amber italic">
           <span class="font-label text-bark not-italic">Интересный факт: </span>
@@ -91,7 +91,7 @@ const explorers: ExplorerConfig[] = [
           {exp.hotspots.map((h) => (
             <button
               type="button"
-              class="explorer-trigger font-label rounded-full bg-warm-white px-3 py-1.5 text-xs text-bark shadow-sm transition-colors hover:text-honey-amber"
+              class="explorer-trigger font-label flex min-h-11 items-center justify-center rounded-full bg-warm-white px-3 text-xs text-bark shadow-sm transition-colors hover:text-honey-amber"
               data-label={h.label}
               data-slug={h.slug}
               data-tip={h.didYouKnow}

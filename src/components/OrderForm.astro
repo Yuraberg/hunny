@@ -26,12 +26,12 @@
 
         <div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label for="fName" class="mb-1 block text-base text-text-body/80">Ваше имя</label>
+            <label for="fName" class="mb-1 block text-base text-text-body/80">Ваше имя <span class="text-red-600" aria-hidden="true">*</span></label>
             <input id="fName" name="name" type="text" placeholder="Как вас зовут?" autocomplete="name" required
               class="w-full rounded-lg border border-cream-dark px-3 py-2.5 focus:border-honey-gold focus:outline-none" />
           </div>
           <div>
-            <label for="fPhone" class="mb-1 block text-base text-text-body/80">Телефон</label>
+            <label for="fPhone" class="mb-1 block text-base text-text-body/80">Телефон <span class="text-red-600" aria-hidden="true">*</span></label>
             <input id="fPhone" name="phone" type="tel" placeholder="+7 (___) ___-__-__" autocomplete="tel" required
               class="w-full rounded-lg border border-cream-dark px-3 py-2.5 focus:border-honey-gold focus:outline-none" />
           </div>
@@ -103,6 +103,8 @@
             <a href="/privacy" target="_blank" rel="noopener" class="text-honey-amber hover:underline">политику конфиденциальности</a>
           </label>
         </div>
+
+        <p class="mb-3 text-sm text-text-body/60"><span class="text-red-600" aria-hidden="true">*</span> — обязательное поле</p>
 
         <button type="submit" class="btn-submit font-label w-full rounded-full bg-bark px-6 py-3.5 text-cream transition disabled:opacity-60">
           Отправить заказ

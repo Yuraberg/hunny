@@ -32,7 +32,7 @@
     const badge = (e.target as HTMLElement).closest<HTMLElement>('.zoom-badge');
     if (badge) {
       e.stopPropagation();
-      const jar = badge.closest<HTMLElement>('.jar-flip');
+      const jar = badge.closest<HTMLElement>('.arch-frame')?.querySelector<HTMLElement>('.jar-flip');
       const showBack = jar?.classList.contains('flipped') && badge.dataset.fullBack;
       openLightbox(
         showBack ? badge.dataset.fullBack! : badge.dataset.full || '',

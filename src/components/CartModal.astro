@@ -129,16 +129,32 @@
     document.getElementById('cartClear')?.addEventListener('click', clearCart);
   }
 
+  const modal = document.getElementById('cartModal');
+  let lastFocused: HTMLElement | null = null;
+
+  function focusableEls(): HTMLElement[] {
+    if (!modal) return [];
+    return Array.from(
+      modal.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )
+    );
+  }
+
   function open() {
+    lastFocused = document.activeElement as HTMLElement | null;
     overlay?.classList.remove('hidden');
     overlay?.classList.add('flex');
     document.body.style.overflow = 'hidden';
+    (document.getElementById('cartModalClose') as HTMLElement | null)?.focus();
   }
 
   function close() {
     overlay?.classList.add('hidden');
     overlay?.classList.remove('flex');
     document.body.style.overflow = '';
+    lastFocused?.focus();
+    lastFocused = null;
   }
 
   document.addEventListener('cart:open', open);
@@ -147,7 +163,23 @@
     if (e.target === overlay) close();
   });
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !overlay?.classList.contains('hidden')) close();
+    if (overlay?.classList.contains('hidden')) return;
+    if (e.key === 'Escape') {
+      close();
+      return;
+    }
+    if (e.key !== 'Tab') return;
+    const els = focusableEls();
+    if (els.length === 0) return;
+    const first = els[0];
+    const last = els[els.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
   });
 
   document.addEventListener('cart:change', render as EventListener);

@@ -46,7 +46,7 @@ const icons = kind === 'hive' ? hiveIcons : casteIcons;
         <ul class="flex flex-1 flex-col gap-2 text-sm text-text-body">
           {item.facts.map((fact) => (
             <li class="flex gap-2">
-              <span class="mt-0.5 text-honey-gold">◆</span>
+              <span class="mt-0.5 text-honey-gold" aria-hidden="true">◆</span>
               <span>{fact}</span>
             </li>
           ))}
