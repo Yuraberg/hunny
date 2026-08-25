@@ -1,0 +1,73 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { WIKI_CATEGORIES, categoryBySlug } from '../../../lib/wiki-categories';
+
+export async function getStaticPaths() {
+  return WIKI_CATEGORIES.map((category) => ({ params: { slug: category.slug } }));
+}
+
+const { slug } = Astro.params;
+const category = categoryBySlug(slug!)!;
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://medovayasloboda.ru';
+
+const articles = (
+  await getCollection('wiki', (a) => (import.meta.env.DEV || !a.data.draft) && a.data.category === category.name)
+).sort((a, b) => a.data.title.localeCompare(b.data.title, 'ru'));
+
+const pageUrl = `${siteUrl}/wiki/category/${category.slug}`;
+const categorySchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Главная', item: `${siteUrl}/` },
+        { '@type': 'ListItem', position: 2, name: 'Медовая энциклопедия', item: `${siteUrl}/wiki` },
+        { '@type': 'ListItem', position: 3, name: category.name, item: pageUrl },
+      ],
+    },
+    {
+      '@type': 'ItemList',
+      itemListElement: articles.map((item, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `${siteUrl}/wiki/${item.id}`,
+        item: { '@type': 'Article', name: item.data.title, url: `${siteUrl}/wiki/${item.id}` },
+      })),
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title={`${category.name} — Медовая энциклопедия`}
+  description={category.description}
+>
+  <script slot="structured-data" is:inline type="application/ld+json" set:html={JSON.stringify(categorySchema)} />
+  <section class="texture-paper px-5 py-24 md:py-28">
+    <div class="mx-auto max-w-6xl">
+      <a href="/wiki" class="mb-6 inline-block text-honey-amber hover:underline">← Вся энциклопедия</a>
+
+      <div class="title-ornate reveal">
+        <h1 class="font-display text-3xl font-normal text-bark">{category.name}</h1>
+      </div>
+      <p class="font-accent reveal mb-12 text-center text-lg text-honey-amber italic">
+        {category.description}
+      </p>
+
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {articles.map((item) => (
+          <a
+            href={`/wiki/${item.id}`}
+            class="group rounded-xl bg-warm-white px-4 py-3 shadow-[0_2px_10px_var(--shadow)] transition-transform hover:-translate-y-0.5"
+          >
+            <h3 class="font-label text-base text-bark group-hover:text-honey-amber">{item.data.title}</h3>
+            <p class="mt-1 line-clamp-2 text-base text-text-body/70">{item.data.excerpt}</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

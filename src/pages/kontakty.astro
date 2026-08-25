@@ -1,0 +1,66 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://medovayasloboda.ru';
+const pageUrl = `${siteUrl}/kontakty`;
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `${siteUrl}/` },
+    { '@type': 'ListItem', position: 2, name: 'Контакты', item: pageUrl },
+  ],
+};
+---
+
+<BaseLayout
+  title="Контакты — Медовая Слобода"
+  description="Контакты семейной пасеки Медовая Слобода в Самарской области: телефон, e-mail, Telegram и WhatsApp."
+>
+  <script slot="structured-data" is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  <div class="mx-auto max-w-2xl px-5 py-24 leading-relaxed text-text-body">
+    <a href="/" class="text-honey-amber hover:underline">← Вернуться на сайт</a>
+
+    <h1 class="font-display mt-6 mb-8 text-3xl text-bark">Контакты</h1>
+
+    <div class="mb-8 rounded-xl border border-honey-gold/40 bg-kraft/40 p-5 text-sm">
+      <strong>Внимание владельцу сайта.</strong> Ниже — только те данные, что уже есть в коде сайта
+      (телефон, e-mail, соцсети). Юридические реквизиты (ИП/ОГРНИП, точный адрес для карты) не заполнены —
+      те же поля нужно дополнить, что и в <a href="/privacy" class="underline">политике конфиденциальности</a>.
+      После заполнения удалите этот блок.
+    </div>
+
+    <h2 class="font-label mt-8 mb-3 text-xl text-bark">Как с нами связаться</h2>
+    <ul class="mb-8 space-y-3">
+      <li>
+        <strong>Адрес:</strong> Самарская область, г. Нефтегорск
+      </li>
+      <li>
+        <strong>Телефон:</strong>
+        <a href="tel:+79874325789" class="text-honey-amber hover:underline">+7 987 432-57-89</a>
+      </li>
+      <li>
+        <strong>E-mail:</strong>
+        <a href="mailto:info@medovayasloboda.ru" class="text-honey-amber hover:underline">info@medovayasloboda.ru</a>
+      </li>
+      <li>
+        <strong>Telegram:</strong>
+        <a href="https://t.me/medslobodaBot" target="_blank" rel="noopener" class="text-honey-amber hover:underline">@medslobodaBot</a>
+      </li>
+      <li>
+        <strong>WhatsApp:</strong>
+        <a href="https://wa.me/79874325789" target="_blank" rel="noopener" class="text-honey-amber hover:underline">wa.me/79874325789</a>
+      </li>
+    </ul>
+
+    <h2 class="font-label mt-8 mb-3 text-xl text-bark">Как оформить заказ</h2>
+    <p class="mb-8">
+      Проще всего — через <a href="/catalog" class="text-honey-amber hover:underline">каталог</a> на сайте:
+      выберите товары, заполните форму заказа, и мы свяжемся с вами для подтверждения. Условия доставки
+      и оплаты — на странице <a href="/dostavka-i-oplata" class="text-honey-amber hover:underline">«Доставка и оплата»</a>.
+    </p>
+
+    <a href="/" class="text-honey-amber hover:underline">← Вернуться на сайт</a>
+  </div>
+</BaseLayout>

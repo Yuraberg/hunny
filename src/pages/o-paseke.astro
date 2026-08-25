@@ -1,0 +1,106 @@
+---
+import { Image } from 'astro:assets';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import dmitryPhoto from '../assets/about/dmitry-berdnikov.jpg';
+import hiveMeadow from '../assets/mir-pchel/hive-meadow.jpg';
+import beeMacro from '../assets/mir-pchel/bee-macro.jpg';
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://medovayasloboda.ru';
+const pageUrl = `${siteUrl}/o-paseke`;
+
+const pageSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Главная', item: `${siteUrl}/` },
+        { '@type': 'ListItem', position: 2, name: 'О пасеке', item: pageUrl },
+      ],
+    },
+    {
+      '@type': 'Person',
+      name: 'Дмитрий Бердников',
+      jobTitle: 'Пасечник',
+      description:
+        'Пасечник в Самарской области, продолжает семейные традиции пчеловодства без использования химии и промышленных методов сбора мёда.',
+      worksFor: { '@id': `${siteUrl}/#business` },
+      image: new URL(dmitryPhoto.src, siteUrl).toString(),
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title="О пасеке — Медовая Слобода"
+  description="Семейная пасека Дмитрия Бердникова в Самарской области: история, традиционные методы сбора мёда без химии, вольные луга у Жигулёвских гор и берегов Волги."
+>
+  <script slot="structured-data" is:inline type="application/ld+json" set:html={JSON.stringify(pageSchema)} />
+  <article class="texture-paper px-5 py-24 md:py-28">
+    <div class="mx-auto max-w-2xl leading-relaxed text-text-body">
+      <a href="/" class="text-honey-amber hover:underline">← Вернуться на сайт</a>
+
+      <h1 class="font-display mt-6 mb-8 text-3xl text-bark">О пасеке</h1>
+
+      <div class="mb-8 aspect-[690/376] overflow-hidden rounded-xl">
+        <Image src={hiveMeadow} alt="Пасека среди луга в Самарском крае" width={900} height={492} loading="eager" class="h-full w-full object-cover" />
+      </div>
+
+      <h2 class="font-label mt-8 mb-3 text-xl text-bark">Где мы работаем</h2>
+      <p class="mb-4">
+        Наша пасека находится в Самарской области, в окрестностях города Нефтегорска — там, где вольные
+        луга спускаются к берегам Волги и Жигулёвским горам. Разнотравье этого края — донник, клевер,
+        гречиха, липа — даёт мёду тот самый насыщенный вкус и аромат, за который его ценят.
+      </p>
+      <p class="mb-8">
+        Пчёлы у нас живут вольно: мы не гоняем семьи по стране вслед за медосбором и не подкармливаем
+        сахарным сиропом ради объёма. Каждая баночка мёда — это то, что пчёлы действительно собрали
+        сами на местных лугах и в лесах Самарского края.
+      </p>
+
+      <div class="mb-8 flex items-center gap-5">
+        <div class="h-[110px] w-[110px] shrink-0 overflow-hidden rounded-full border-2 border-honey-gold/50">
+          <Image src={dmitryPhoto} alt="Дмитрий Бердников, пасечник" width={110} height={110} loading="lazy" class="h-full w-full object-cover" />
+        </div>
+        <div>
+          <h2 class="font-label mb-1 text-xl text-bark">Дмитрий Бердников</h2>
+          <p class="text-base text-text-body/80">Пасечник, продолжатель семейного дела</p>
+        </div>
+      </div>
+      <p class="mb-4">
+        Пчеловодство в нашей семье передаётся из поколения в поколение. Дмитрий продолжает дело,
+        начатое старшими родственниками, — те же дедовские приёмы работы с пчёлами, тот же принцип:
+        не мешать пчёлам делать своё дело и не спешить забирать мёд раньше срока.
+      </p>
+      <p class="mb-8">
+        Каждый этап — от установки ульев до откачки и розлива мёда — Дмитрий контролирует лично.
+        Это небольшая семейная пасека, а не промышленное производство: такой масштаб позволяет
+        следить за качеством каждой партии.
+      </p>
+
+      <div class="mb-8 aspect-[690/376] overflow-hidden rounded-xl">
+        <Image src={beeMacro} alt="Медоносная пчела крупным планом" width={900} height={492} loading="lazy" class="h-full w-full object-cover" />
+      </div>
+
+      <h2 class="font-label mt-8 mb-3 text-xl text-bark">Наши принципы</h2>
+      <ul class="mb-8 list-disc space-y-2 pl-6">
+        <li>Никакой химии — только природные методы содержания пчёл.</li>
+        <li>Мёд собирается только после полного созревания в сотах.</li>
+        <li>Разлив мёда — сразу после откачки, без длительного хранения в промышленных ёмкостях.</li>
+        <li>Личная ответственность пасечника за каждую партию — от улья до банки.</li>
+      </ul>
+
+      <p class="font-accent mb-8 border-l-4 border-honey-gold pl-5 text-left text-xl text-honey-amber italic">
+        «Мы продаём не просто банку мёда, а кусочек спокойной, здоровой жизни»
+      </p>
+
+      <p class="mb-8">
+        Хотите увидеть, как устроена жизнь пчелиной семьи? Загляните в раздел
+        <a href="/mir-pchel" class="text-honey-amber hover:underline">«Мир пчёл»</a> —
+        там мы рассказываем об этом подробнее и наглядно.
+      </p>
+
+      <a href="/" class="text-honey-amber hover:underline">← Вернуться на сайт</a>
+    </div>
+  </article>
+</BaseLayout>

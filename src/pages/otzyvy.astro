@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://medovayasloboda.ru';
+const pageUrl = `${siteUrl}/otzyvy`;
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `${siteUrl}/` },
+    { '@type': 'ListItem', position: 2, name: 'Отзывы', item: pageUrl },
+  ],
+};
+---
+
+<BaseLayout
+  title="Отзывы — Медовая Слобода"
+  description="Отзывы покупателей мёда с семейной пасеки Медовая Слобода в Самарской области."
+>
+  <script slot="structured-data" is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  <div class="mx-auto max-w-2xl px-5 py-24 text-center leading-relaxed text-text-body">
+    <a href="/" class="text-honey-amber hover:underline">← Вернуться на сайт</a>
+
+    <h1 class="font-display mt-6 mb-6 text-3xl text-bark">Отзывы</h1>
+
+    <p class="mb-4">
+      Мы только начинаем собирать отзывы покупателей на сайте — если вы уже заказывали у нас мёд,
+      будем рады узнать ваше мнение.
+    </p>
+    <p class="mb-8">
+      Напишите нам в <a href="https://t.me/medslobodaBot" target="_blank" rel="noopener" class="text-honey-amber hover:underline">Telegram</a>
+      или <a href="https://wa.me/79874325789" target="_blank" rel="noopener" class="text-honey-amber hover:underline">WhatsApp</a> —
+      с вашего согласия опубликуем отзыв на этой странице.
+    </p>
+
+    <a href="/catalog" class="inline-block rounded-full bg-honey-amber px-6 py-3 font-medium text-white transition hover:bg-bark">
+      Посмотреть каталог
+    </a>
+  </div>
+</BaseLayout>

@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// Совпадает с FREE_SHIPPING_THRESHOLD в src/lib/cart.ts — импортировать оттуда
+// нельзя, модуль клиентский и обращается к document на верхнем уровне.
+const FREE_SHIPPING_THRESHOLD = 10000;
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://medovayasloboda.ru';
+const pageUrl = `${siteUrl}/dostavka-i-oplata`;
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `${siteUrl}/` },
+    { '@type': 'ListItem', position: 2, name: 'Доставка и оплата', item: pageUrl },
+  ],
+};
+---
+
+<BaseLayout
+  title="Доставка и оплата — Медовая Слобода"
+  description="Доставка мёда с пасеки в Самарском крае по России от 500 ₽, бесплатно от 10 000 ₽, самовывоз с пасеки. Оплата онлайн картой/СБП или при получении."
+>
+  <script slot="structured-data" is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  <div class="mx-auto max-w-2xl px-5 py-24 leading-relaxed text-text-body">
+    <a href="/" class="text-honey-amber hover:underline">← Вернуться на сайт</a>
+
+    <h1 class="font-display mt-6 mb-8 text-3xl text-bark">Доставка и оплата</h1>
+
+    <h2 class="font-label mt-8 mb-3 text-xl text-bark">Доставка</h2>
+    <p class="mb-4">
+      Доставляем мёд и подарочные наборы по всей России. Стоимость доставки — от 500 ₽,
+      зависит от региона и веса заказа и рассчитывается при оформлении на сайте
+      или уточняется менеджером после подтверждения заказа.
+    </p>
+    <p class="mb-4">
+      <strong>Бесплатная доставка</strong> — при заказе от {FREE_SHIPPING_THRESHOLD.toLocaleString('ru-RU')} ₽.
+    </p>
+    <p class="mb-4">
+      <strong>Самовывоз</strong> — можно забрать заказ самостоятельно прямо с пасеки в
+      Самарской области (г. Нефтегорск), точное время и адрес согласуем при оформлении заказа.
+    </p>
+    <p class="mb-8">
+      Срок доставки по Самарской области — 1–2 дня, в другие регионы России — обычно от 3 до 10 дней
+      в зависимости от удалённости.
+    </p>
+
+    <h2 class="font-label mt-8 mb-3 text-xl text-bark">Оплата</h2>
+    <ul class="mb-4 list-disc space-y-2 pl-6">
+      <li><strong>Онлайн</strong> — банковской картой или через СБП при оформлении заказа на сайте.</li>
+      <li><strong>При получении</strong> — наличными или картой курьеру либо при самовывозе с пасеки.</li>
+    </ul>
+    <p class="mb-8">
+      После оплаты заказа вы получите подтверждение по указанному телефону или в мессенджере.
+    </p>
+
+    <h2 class="font-label mt-8 mb-3 text-xl text-bark">Остались вопросы?</h2>
+    <p class="mb-8">
+      Свяжитесь с нами любым удобным способом — контакты на странице
+      <a href="/kontakty" class="text-honey-amber hover:underline">«Контакты»</a>
+      или в <a href="https://t.me/medslobodaBot" target="_blank" rel="noopener" class="text-honey-amber hover:underline">Telegram</a>
+      и <a href="https://wa.me/79874325789" target="_blank" rel="noopener" class="text-honey-amber hover:underline">WhatsApp</a>.
+    </p>
+
+    <a href="/" class="text-honey-amber hover:underline">← Вернуться на сайт</a>
+  </div>
+</BaseLayout>
