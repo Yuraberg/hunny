@@ -49,3 +49,9 @@ jobs:
           159.194.203.22 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOePBHd0Hg8XV6zyTeWBqON06wLGv4VfjJs1II0tZhqX
           EOF
           ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes root@159.194.203.22 < deploy_bundle.tar.gz
+
+      - name: Уведомить IndexNow об изменившихся URL
+        env:
+          INDEXNOW_BEFORE_SHA: ${{ github.event.before }}
+          INDEXNOW_AFTER_SHA: ${{ github.event.after }}
+        run: node scripts/indexnow-ping.mjs
