@@ -5,6 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 import { unified } from '@astrojs/markdown-remark';
 import rehypeUnstubWikiLinks from './src/lib/rehype-unstub-wiki-links.ts';
+import { lastmodForUrl } from './src/lib/sitemap-lastmod.ts';
 
 // https://astro.build/config
 export default defineConfig({
@@ -12,6 +13,10 @@ export default defineConfig({
   integrations: [
     sitemap({
       filter: (page) => !new URL(page).pathname.replace(/\/$/, '').startsWith('/order'),
+      serialize(item) {
+        const lastmod = lastmodForUrl(item.url);
+        return lastmod ? { ...item, lastmod } : item;
+      },
     }),
   ],
   markdown: {

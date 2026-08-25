@@ -10,6 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Полная история нужна sitemap-lastmod.ts — он берёт дату последнего
+          # коммита по каждому файлу через `git log`, shallow clone (по
+          # умолчанию depth=1) не даёт этого сделать для большинства файлов.
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
