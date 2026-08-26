@@ -4,6 +4,7 @@ import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import JarFlip from '../../components/JarFlip.astro';
 import ProductCard from '../../components/ProductCard.astro';
+import ProductBenefits from '../../components/ProductBenefits.astro';
 
 export async function getStaticPaths() {
   const products = await getCollection('products', (p) => import.meta.env.DEV || !p.data.draft);
@@ -11,8 +12,24 @@ export async function getStaticPaths() {
 }
 
 const { product, allProducts } = Astro.props;
-const { name, category, slogan, description, price, weight, weightGrams, imageFront, imageBack, hasFlip, inStock } =
-  product.data;
+const {
+  name,
+  category,
+  slogan,
+  description,
+  price,
+  weight,
+  weightGrams,
+  imageFront,
+  imageBack,
+  hasFlip,
+  inStock,
+  botanicalSource,
+  benefits,
+  recommendedFor,
+  restrictions,
+  allergyNote,
+} = product.data;
 const { Content } = await render(product);
 
 const others = allProducts
@@ -116,6 +133,13 @@ const productSchema = {
 
       <div class="story-content mx-auto mt-14 max-w-2xl text-text-body">
         <Content />
+        <ProductBenefits
+          botanicalSource={botanicalSource}
+          benefits={benefits}
+          recommendedFor={recommendedFor}
+          restrictions={restrictions}
+          allergyNote={allergyNote}
+        />
       </div>
 
       {others.length > 0 && (

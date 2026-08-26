@@ -1,0 +1,178 @@
+---
+// ИИ-сомелье в образе пчелы-помощницы пасечника (docs/bee-sommelier-plan-2026-08-26.md).
+// Обращается к Cloudflare Worker (worker/sommelier-worker.js), адрес которого
+// задаётся переменной окружения PUBLIC_SOMMELIER_ENDPOINT на этапе сборки
+// (см. секцию Build в .github/workflows/deploy.yml). Пока переменная не
+// задана, блок мягко предлагает заглянуть в каталог — без ошибок сборки.
+---
+
+<section id="sommelier" class="texture-kraft py-24">
+  <div class="mx-auto max-w-2xl px-5">
+    <div class="rounded-2xl bg-warm-white p-6 shadow-lg md:p-8">
+      <div class="mb-3 flex items-center gap-3">
+        <svg
+          class="bee-mascot h-12 w-12 shrink-0"
+          viewBox="0 0 48 48"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <ellipse cx="24" cy="26" rx="11" ry="13" fill="#3D2B1A" />
+          <path d="M13 20h22M13 26h22M13 32h18" stroke="#E8B84B" stroke-width="4" stroke-linecap="round" />
+          <ellipse class="bee-wing bee-wing-left" cx="14" cy="14" rx="7" ry="5" fill="#FFF8E7" opacity="0.85" />
+          <ellipse class="bee-wing bee-wing-right" cx="34" cy="14" rx="7" ry="5" fill="#FFF8E7" opacity="0.85" />
+          <circle cx="24" cy="10" r="5" fill="#3D2B1A" />
+          <path d="M21 8l-3-4M27 8l3-4" stroke="#3D2B1A" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+        <h2 class="font-display text-2xl text-bark">Спросите пчёлку</h2>
+      </div>
+      <p class="mb-5 text-base text-text-body">
+        Расскажите, кому и для чего нужен мёд — пчёлка подскажет, какой сорт подойдёт лучше всего.
+      </p>
+
+      <div class="flex flex-col gap-3">
+        <textarea
+          id="sommelierInput"
+          maxlength="400"
+          rows="3"
+          placeholder="Например: ищу мёд для мужа, он много занимается спортом и часто простывает зимой…"
+          class="w-full resize-none rounded-lg border border-cream-dark px-3 py-2.5 focus:border-honey-gold focus:outline-none"
+        ></textarea>
+        <button
+          type="button"
+          id="sommelierAskBtn"
+          class="font-label self-start rounded-full bg-bark px-6 py-3 text-cream shadow-[0_4px_0_var(--color-bark-medium)] transition-transform hover:-translate-y-0.5 disabled:opacity-50"
+        >
+          Спросить пчёлку
+        </button>
+      </div>
+
+      <p id="sommelierLoading" class="mt-4 hidden items-center gap-2 text-sm text-text-body/70">
+        <span class="bee-spin inline-block">🐝</span> Пчёлка думает над вашим вопросом…
+      </p>
+
+      <div
+        id="sommelierReply"
+        class="mt-4 hidden rounded-lg border-l-4 border-honey-gold bg-cream/60 p-4 text-base text-text-body"
+      ></div>
+
+      <p class="mt-5 text-xs text-text-body/60">
+        Пчёлка подбирает мёд по вкусу и поводу, а не по здоровью: при диабете, аллергии и для детей до года
+        решение всегда за вашим врачом.
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .bee-wing {
+    transform-origin: center;
+    animation: bee-flutter 0.18s ease-in-out infinite alternate;
+  }
+  .bee-wing-right {
+    animation-delay: 0.05s;
+  }
+  @keyframes bee-flutter {
+    from {
+      transform: scaleY(1);
+    }
+    to {
+      transform: scaleY(0.75);
+    }
+  }
+  .bee-spin {
+    animation: bee-bob 0.6s ease-in-out infinite alternate;
+  }
+  @keyframes bee-bob {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-3px);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bee-wing,
+    .bee-spin {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  import { getProduct } from '../lib/cart';
+
+  const ENDPOINT = import.meta.env.PUBLIC_SOMMELIER_ENDPOINT ?? '';
+
+  const input = document.getElementById('sommelierInput') as HTMLTextAreaElement | null;
+  const btn = document.getElementById('sommelierAskBtn') as HTMLButtonElement | null;
+  const loading = document.getElementById('sommelierLoading');
+  const reply = document.getElementById('sommelierReply');
+
+  function escapeHtml(s: string): string {
+    const div = document.createElement('div');
+    div.textContent = s;
+    return div.innerHTML;
+  }
+
+  function showReply(html: string, isError = false) {
+    if (!reply) return;
+    reply.classList.remove('hidden');
+    reply.classList.toggle('border-red-600', isError);
+    reply.classList.toggle('border-honey-gold', !isError);
+    reply.innerHTML = html;
+  }
+
+  async function askSommelier() {
+    if (!input || !btn || !loading) return;
+    const text = input.value.trim();
+
+    if (!text) {
+      showReply('Расскажите пару слов о том, кому и для чего нужен мёд — тогда пчёлка сможет посоветовать.', true);
+      return;
+    }
+
+    if (!ENDPOINT) {
+      showReply(
+        'Пчёлка пока настраивается — загляните чуть позже 🐝 А пока загляните в каталог выше, там уже есть описание каждого сорта.',
+        true
+      );
+      return;
+    }
+
+    btn.disabled = true;
+    reply?.classList.add('hidden');
+    loading.classList.remove('hidden');
+    loading.classList.add('flex');
+
+    try {
+      const res = await fetch(ENDPOINT + '/sommelier', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Ошибка сервиса');
+
+      loading.classList.add('hidden');
+      loading.classList.remove('flex');
+
+      let html = escapeHtml(data.reply).replace(/\n+/g, '<br><br>');
+      const product = data.pick ? getProduct(data.pick) : undefined;
+      if (product) {
+        html +=
+          `<br><button type="button" class="add-to-cart-btn font-label mt-3 rounded-full bg-bark px-5 py-2.5 text-cream shadow-[0_4px_0_var(--color-bark-medium)] transition-transform hover:-translate-y-0.5" data-product-id="${product.id}">` +
+          `Добавить «${escapeHtml(product.name)}» в корзину</button>`;
+      }
+      showReply(html);
+    } catch {
+      loading.classList.add('hidden');
+      loading.classList.remove('flex');
+      showReply('Не получилось связаться с пчёлкой. Попробуйте ещё раз чуть позже или напишите нам напрямую.', true);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  btn?.addEventListener('click', askSommelier);
+</script>

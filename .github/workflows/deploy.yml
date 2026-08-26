@@ -29,6 +29,10 @@ jobs:
           YANDEX_METRIKA_ID: ${{ secrets.YANDEX_METRIKA_ID }}
           GOOGLE_SITE_VERIFICATION: ${{ secrets.GOOGLE_SITE_VERIFICATION }}
           YANDEX_SITE_VERIFICATION: ${{ secrets.YANDEX_SITE_VERIFICATION }}
+          # Адрес Cloudflare Worker для блока «Спросите пчёлку» (см.
+          # worker/sommelier-worker.js). Пока секрет не задан — блок на
+          # сайте мягко предлагает заглянуть в каталог, сборка не ломается.
+          PUBLIC_SOMMELIER_ENDPOINT: ${{ secrets.PUBLIC_SOMMELIER_ENDPOINT }}
         run: npm run build
 
       - name: Собрать бандл для деплоя (site/ + api/)

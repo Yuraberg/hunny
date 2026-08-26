@@ -18,6 +18,16 @@ const products = defineCollection({
     order: z.number().default(0),
     inStock: z.boolean().default(true),
     draft: z.boolean().default(false),
+    // Поля ниже — необязательные, для блока «Польза и ограничения» на
+    // карточке товара и для промпта ИИ-сомелье (worker/sommelier-worker.js).
+    // Значения через «; » — конвертируются в список в компоненте и в
+    // scripts/generate-products.mjs, полноценный YAML-массив тут излишен.
+    botanicalSource: z.string().optional(), // медонос, напр. «липа», «донник»
+    tasteProfile: z.string().optional(), // вкус/текстура — материал для сомелье
+    benefits: z.string().optional(), // «п. 1; п. 2; …», без мед. обещаний
+    recommendedFor: z.string().optional(), // «п. 1; п. 2; …»
+    restrictions: z.string().optional(), // «п. 1; п. 2; …»
+    allergyNote: z.string().optional(), // сорт-специфичный перекрёст с аллергией
   }),
 });
 

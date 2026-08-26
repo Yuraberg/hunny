@@ -1,5 +1,10 @@
 [
   {
+    "id": "belaya",
+    "price": 650,
+    "weightGrams": 900
+  },
+  {
     "id": "bogatyrskaya",
     "price": 600,
     "weightGrams": 900
@@ -18,5 +23,35 @@
     "id": "lugovoy",
     "price": 500,
     "weightGrams": 900
+  },
+  {
+    "id": "nabor-dyhanie",
+    "price": 1200,
+    "weightGrams": 600
+  },
+  {
+    "id": "nabor-prival",
+    "price": 2600,
+    "weightGrams": 1800
+  },
+  {
+    "id": "nabor-zaychik",
+    "price": 1500,
+    "weightGrams": 1300
+  },
+  {
+    "id": "stepnoe",
+    "price": 500,
+    "weightGrams": 900
+  },
+  {
+    "id": "vecherniy",
+    "price": 750,
+    "weightGrams": 900
+  },
+  {
+    "id": "zapechatannoe",
+    "price": 700,
+    "weightGrams": 400
   }
 ]
