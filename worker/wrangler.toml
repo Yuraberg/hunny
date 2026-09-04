@@ -4,3 +4,9 @@ compatibility_date = "2024-11-01"
 
 # Секретный ключ ANTHROPIC_API_KEY НЕ хранится в этом файле.
 # Задайте его один раз командой:  wrangler secret put ANTHROPIC_API_KEY
+
+# Rate-limit по IP + дневной бюджет запросов (защита от cost-abuse) хранит
+# счётчики в Workers KV.
+[[kv_namespaces]]
+binding = "RATE_LIMIT_KV"
+id = "26da931217d04ee5b2017ac93ad17161"

@@ -1,0 +1,73 @@
+---
+// Блок «Польза / кому подходит / ограничения» на карточке товара
+// (docs/bee-sommelier-plan-2026-08-26.md, §3). Значения приходят из
+// content.config.ts как строки вида «п. 1; п. 2» — раскладываем в список.
+interface Props {
+  botanicalSource?: string;
+  benefits?: string;
+  recommendedFor?: string;
+  restrictions?: string;
+  allergyNote?: string;
+}
+
+const { botanicalSource, benefits, recommendedFor, restrictions, allergyNote } = Astro.props;
+
+const toList = (value?: string) =>
+  value
+    ? value
+        .split(';')
+        .map((s) => s.trim())
+        .filter(Boolean)
+    : [];
+
+const benefitsList = toList(benefits);
+const recommendedList = toList(recommendedFor);
+const restrictionsList = toList(restrictions);
+
+const hasContent = benefitsList.length > 0 || recommendedList.length > 0 || restrictionsList.length > 0;
+---
+
+{hasContent && (
+  <div class="mt-8 space-y-5">
+    {botanicalSource && (
+      <p class="text-sm text-text-body/70">
+        Медонос: <span class="text-text-body">{botanicalSource}</span>
+      </p>
+    )}
+
+    {benefitsList.length > 0 && (
+      <div>
+        <h2 class="font-label mb-2 text-sm text-honey-amber">Чем ценится</h2>
+        <ul class="list-disc space-y-1 pl-5 text-sm text-text-body">
+          {benefitsList.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+    )}
+
+    {recommendedList.length > 0 && (
+      <div>
+        <h2 class="font-label mb-2 text-sm text-honey-amber">Кому подойдёт</h2>
+        <ul class="list-disc space-y-1 pl-5 text-sm text-text-body">
+          {recommendedList.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+    )}
+
+    {restrictionsList.length > 0 && (
+      <div>
+        <h2 class="font-label mb-2 text-sm text-honey-amber">Ограничения</h2>
+        <ul class="list-disc space-y-1 pl-5 text-sm text-text-body">
+          {restrictionsList.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+    )}
+
+    <div class="rounded-xl border border-honey-gold/40 bg-kraft/40 p-4 text-sm text-text-body">
+      {allergyNote && <p class="mb-2">{allergyNote} Подробнее — в статье «<a href="/wiki/allergiya-na-med" class="text-honey-amber hover:underline">Аллергия на мёд</a>».</p>}
+      <p>
+        Мёд — сильный природный продукт. Информация выше не является медицинской рекомендацией;
+        при аллергии, диабете и для детей решение всегда за вашим врачом.
+      </p>
+    </div>
+  </div>
+)}

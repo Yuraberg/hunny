@@ -45,7 +45,18 @@ for (const file of files) {
 
   const description = body.split(/\n\s*\n/)[0].replace(/\s+/g, ' ').trim();
 
-  products.push({ id, name: data.name, category: data.category, description });
+  products.push({
+    id,
+    name: data.name,
+    category: data.category,
+    description,
+    botanicalSource: data.botanicalSource ?? null,
+    tasteProfile: data.tasteProfile ?? null,
+    benefits: data.benefits ?? null,
+    recommendedFor: data.recommendedFor ?? null,
+    restrictions: data.restrictions ?? null,
+    allergyNote: data.allergyNote ?? null,
+  });
 }
 
 products.sort((a, b) => a.id.localeCompare(b.id));
